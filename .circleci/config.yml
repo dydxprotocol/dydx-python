@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6.1
-    working_directory: ~/repo
+      - image: circleci/python:3.6.4
+    working_directory: ~/build
     steps:
       - checkout
       - restore_cache:
@@ -11,20 +11,35 @@ jobs:
             - v1-dependencies-{{ checksum "requirements.txt" }}
             - v1-dependencies-
       - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+          name: Install Dependencies
+          command: sudo pip install -r requirements.txt
       - save_cache:
           paths:
-            - ./venv
+            - ~/build
           key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - save_cache:
+          key: cache-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/build
+  test:
+    working_directory: ~/build
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - restore_cache:
+          key: cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            python manage.py test
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          name: Install Dependencies
+          command: sudo pip install -r requirements.txt
+      - run:
+          name: Test
+          command: tox
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
