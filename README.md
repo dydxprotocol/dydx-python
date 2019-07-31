@@ -8,5 +8,6 @@ dYdX Python API for Limit Orders
 pip install -r requirements.txt
 
 # Run the tests
+docker-compose up
 tox
 ```
