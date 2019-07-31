@@ -1,4 +1,4 @@
-import web3
+from web3 import Web3
 
 EIP712_ORDER_STRUCT_STRING = \
   'LimitOrder(' + \

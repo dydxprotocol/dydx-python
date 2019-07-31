@@ -1,45 +1,26 @@
 version: 2
 jobs:
-  build:
+  build_and_test:
     docker:
       - image: circleci/python:3.6.4
+      - image: trufflesuite/ganache-cli:v6.4.1
+        command: -d -k=petersburg -i 1001
     working_directory: ~/build
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-            - v1-dependencies-
-      - run:
-          name: Install Dependencies
-          command: sudo pip install -r requirements.txt
-      - save_cache:
-          paths:
-            - ~/build
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
-      - save_cache:
-          key: cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/build
-  test:
-    working_directory: ~/build
-    docker:
-      - image: circleci/python:3.6.4
-    steps:
-      - restore_cache:
-          key: cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Install Dependencies
           command: sudo pip install -r requirements.txt
       - run:
           name: Test
           command: tox
+      - save_cache:
+          key: cache-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/build
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - build_and_test
