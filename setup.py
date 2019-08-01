@@ -6,7 +6,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='dydx-python',
-    version='0.0.2',
+    version='0.0.3',
     packages=find_packages(),
     description='dYdX Python REST API for Limit Orders',
     long_description=README,
