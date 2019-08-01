@@ -1,29 +1,33 @@
-from setuptools import setup
+import os
+from setuptools import setup, find_packages
 
-REQUIREMENTS = [
-    'requests>=2.5',
-    'six==1.12',
-    'web3==4.9.2',
-    'pytest>=4.4.0,<5.0.0',
-    'tox==3.13.2',
-    'setuptools',
-    'eth_keys'
-]
+
+README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='dydx-python',
-    version='0.1.0',
-    packages=['dydx'],
+    version='0.0.2',
+    packages=find_packages(),
     description='dYdX Python REST API for Limit Orders',
+    long_description=README,
+    long_description_content_type='text/markdown',
     url='https://github.com/dydxprotocol/dydx-python',
     author='dYdX Trading Inc.',
     license='Apache 2.0',
     author_email='contact@dydx.exchange',
-    install_requires=REQUIREMENTS,
+    install_requires=[
+        'requests>=2.5',
+        'six==1.12',
+        'web3==4.9.2',
+        'pytest>=4.4.0,<5.0.0',
+        'tox==3.13.2',
+        'setuptools',
+        'eth_keys'
+    ],
     keywords='dydx exchange rest api defi ethereum eth',
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache License 2.0',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',

@@ -9,10 +9,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Dependencies
+          name: install dependencies
           command: sudo pip install -r requirements.txt
       - run:
-          name: Test
+          name: test
           command: tox
   lint:
     docker:
@@ -21,11 +21,32 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Dependencies
+          name: install dependencies
           command: sudo pip install -r requirements-lint.txt
       - run:
-          name: Lint
+          name: lint
           command: flake8
+  publish:
+    docker:
+      - image: circleci/python:3.6.4
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: sudo pip install -r requirements-publish.txt
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = @token" >> ~/.pypirc
+            echo -e "password = $PYPI_TOKEN" >> ~/.pypirc
+      - run:
+          name: create packages
+          command: python3 setup.py sdist bdist_wheel
+      - run:
+          name: upload to pypi
+          command: python3 -m twine upload dist/* --skip-existing
 
 workflows:
   version: 2
@@ -33,3 +54,7 @@ workflows:
     jobs:
       - lint
       - test
+      - publish:
+          requires:
+            - lint
+            - test
