@@ -112,7 +112,7 @@ def address_to_bytes32(addr):
 def normalize_private_key(private_key):
     if type(private_key) == str:
         return bytearray.fromhex(strip_hex_prefix(private_key))
-    elif type(private_key) == bytes:
+    elif type(private_key) == bytearray:
         return private_key
     else:
         raise TypeError('private_key incorrect type')

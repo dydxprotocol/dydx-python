@@ -8,8 +8,13 @@ PUBLIC_ADDRESS_2 = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
 
 class TestClient():
 
-    def test_constructor_basic(self):
+    def test_constructor_string_private_key(self):
         client = Client(PRIVATE_KEY)
+        assert(client.public_address == PUBLIC_ADDRESS)
+        assert(client.account_number == '0')
+
+    def test_constructor_bytes_private_key(self):
+        client = Client(bytearray.fromhex(PRIVATE_KEY[2:]))
         assert(client.public_address == PUBLIC_ADDRESS)
         assert(client.account_number == '0')
 
