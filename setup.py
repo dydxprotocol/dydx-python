@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 
-with open('README.md', 'r') as fh:
-    LONG_DESCRIPTION = fh.read()
+LONG_DESCRIPTION = open('README.md', 'r').read()
 
 REQUIREMENTS = [
     'requests>=2.5',
@@ -13,11 +12,9 @@ REQUIREMENTS = [
     'eth_keys'
 ]
 
-print(LONG_DESCRIPTION)
-
 setup(
     name='dydx-python',
-    version='0.0.3',
+    version='0.0.4',
     packages=find_packages(),
     description='dYdX Python REST API for Limit Orders',
     long_description=LONG_DESCRIPTION,
