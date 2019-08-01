@@ -22,6 +22,7 @@ EIP712_DOMAIN_STRING = \
   'address verifyingContract' + \
   ')'
 
+
 def get_order_hash(order):
     '''
     Returns the final signable EIP712 hash for an order.
@@ -36,7 +37,7 @@ def get_order_hash(order):
         ],
         [
             hash_string(EIP712_DOMAIN_STRING),
-            hash_string(LimitOrders),
+            hash_string('LimitOrders'),
             hash_string('1.0'),
             1,
             '0xeb32d60A5cDED175cea9aFD0f2447297C125F2f4'
@@ -84,6 +85,7 @@ def get_order_hash(order):
         ]
     )
 
+
 def get_cancel_order_hash(order):
     order_hash = get_order_hash(order)
     return Web3.soliditySha3(
@@ -91,26 +93,17 @@ def get_cancel_order_hash(order):
         ['cancel', order_hash]
     )
 
+
 def hash_string(input):
     return Web3.soliditySha3(['string'], [input])
 
+
 def strip_hex_prefix(input):
-    if addr[0:2] == '0x':
+    if input[0:2] == '0x':
         return input[2:]
     else:
         return input
 
+
 def address_to_bytes32(addr):
     return '0x000000000000000000000000' + strip_hex_prefix(addr)
-
-def sign_order(w3, order):
-    order_hash = get_order_hash(order)
-    signature = w3.eth.sign(order.maker_account_owner, order_hash)
-    typedSignature = signature + '01'
-    return typedSignature
-
-def sign_cancel_order(w3, order):
-    cancel_order_hash = get_cancel_order_hash(order)
-    signature = w3.eth.sign(order.maker_account_owner, order_hash)
-    typedSignature = signature + '01'
-    return typedSignature
