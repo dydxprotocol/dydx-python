@@ -87,8 +87,7 @@ def get_order_hash(order):
     )
 
 
-def get_cancel_order_hash(order):
-    order_hash = get_order_hash(order)
+def get_cancel_order_hash(order_hash):
     return Web3.soliditySha3(
         ['string', 'bytes32'],
         ['cancel', order_hash]
@@ -110,6 +109,15 @@ def address_to_bytes32(addr):
     return '0x000000000000000000000000' + strip_hex_prefix(addr)
 
 
-def private_key_to_public_address(key):
+def normalize_private_key(private_key):
+    if type(private_key) == str:
+        return bytearray.fromhex(strip_hex_prefix(private_key))
+    elif type(private_key) == bytes:
+        return private_key
+    else:
+        raise TypeError('private_key incorrect type')
+
+
+def private_key_to_address(key):
     eth_keys_key = eth_keys.keys.PrivateKey(key)
     return eth_keys_key.public_key.to_checksum_address().lower()

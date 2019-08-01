@@ -31,5 +31,6 @@ class TestClient():
             Client()
 
     def test_constructor_bad_public_address(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError) as error:
             Client(PRIVATE_KEY, public_address=PUBLIC_ADDRESS_2)
+        assert 'private_key/public_address mismatch' in str(error.value)

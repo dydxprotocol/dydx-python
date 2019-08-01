@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build_and_test:
+  test:
     docker:
       - image: circleci/python:3.6.4
       - image: trufflesuite/ganache-cli:v6.4.1
@@ -12,18 +12,28 @@ jobs:
           name: Install Dependencies
           command: sudo pip install -r requirements.txt
       - run:
-          name: Lint
-          command: flake8
-      - run:
           name: Test
           command: tox
       - save_cache:
           key: cache-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/build
+  lint:
+    docker:
+      - image: circleci/python:3.6.4
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: sudo pip install -r requirements-lint.txt
+      - run:
+          name: Lint
+          command: flake8
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_and_test
+      - lint
+      - test

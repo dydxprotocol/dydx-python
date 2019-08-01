@@ -12,17 +12,12 @@ class Client(object):
     BASE_API_URI = 'https://api.dydx.exchange/v1/dex/'
 
     def __init__(self, private_key, public_address=None, account_number='0'):
-        if type(private_key) == str:
-            private_key = \
-                bytearray.fromhex(utils.strip_hex_prefix(private_key))
-        elif type(private_key) != bytes:
-            raise TypeError('private_key incorrect type')
         self.web3 = Web3()
-        self.private_key = private_key
+        self.private_key = utils.normalize_private_key(private_key)
         self.account_number = account_number
-        self.public_address = utils.private_key_to_public_address(private_key)
-        if public_address:
-            assert(self.public_address == public_address.lower())
+        self.public_address = utils.private_key_to_address(self.private_key)
+        if public_address and self.public_address != public_address.lower():
+            raise ValueError('private_key/public_address mismatch')
         self.session = self._init_session()
 
     # ------------ Signing Methods ------------
@@ -36,8 +31,8 @@ class Client(object):
         typedSignature = signature + '01'
         return typedSignature
 
-    def sign_cancel_order(self, order):
-        cancel_order_hash = utils.get_cancel_order_hash(order)
+    def sign_cancel_order(self, order_hash):
+        cancel_order_hash = utils.get_cancel_order_hash(order_hash)
         signature = self.web3.eth.accounts.sign(
             cancel_order_hash,
             self.private_key
@@ -136,10 +131,16 @@ class Client(object):
         :raises: Exception
         '''
         order = data['order']
-        assert(order['makerMarket'])
-        assert(order['takerMarket'])
-        assert(order['makerAmount'])
-        assert(order['takerAmount'])
+
+        if 'makerMarket' not in order:
+            raise KeyError('makerMarket not specified in order')
+        if 'takerMarket' not in order:
+            raise KeyError('takerMarket not specified in order')
+        if 'makerAmount' not in order:
+            raise KeyError('makerAmount not specified in order')
+        if 'takerAmount' not in order:
+            raise KeyError('takerAmount not specified in order')
+
         order.makerAccountOwner = self.public_address
         order.makerAccountNumber = self.account_number
         order.takerAccountOwner = self.TAKER_ACCOUNT_OWNER
@@ -149,7 +150,7 @@ class Client(object):
         order.typedSignature = self.sign_order(data['order'])
         return self._post('orders', data=data)
 
-    def delete_order(self, orderHash, typedSignature):
+    def delete_order(self, orderHash):
         '''
         Delete an order
         :param orderHash: required
@@ -159,6 +160,7 @@ class Client(object):
         :returns: None
         :raises: Exception
         '''
+        typedSignature = self.sign_cancel_order(orderHash)
         return self._delete(
             'orders/' + orderHash,
             headers={'Authorization': typedSignature}
