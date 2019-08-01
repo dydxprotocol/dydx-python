@@ -1,6 +1,7 @@
 # dydx-python
 dYdX Python API for Limit Orders
 
+The library is currently tested against Python versions 2.7 and 3.4+.
 
 ### Testing
 ```

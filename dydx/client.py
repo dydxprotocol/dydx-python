@@ -1,12 +1,49 @@
+import random
 import requests
+import dydx.util as utils
+
+from web3 import Web3
 
 
 class Client(object):
 
+    TAKER_ACCOUNT_OWNER = '0x0000000000000000000000000000000000000000'
+    TAKER_ACCOUNT_NUMBER = '0'
     BASE_API_URI = 'https://api.dydx.exchange/v1/dex/'
 
-    def __init__(self):
+    def __init__(self, private_key, public_address=None, account_number='0'):
+        if type(private_key) == str:
+            private_key = \
+                bytearray.fromhex(utils.strip_hex_prefix(private_key))
+        elif type(private_key) != bytes:
+            raise TypeError('private_key incorrect type')
+        self.web3 = Web3()
+        self.private_key = private_key
+        self.account_number = account_number
+        self.public_address = utils.private_key_to_public_address(private_key)
+        if public_address:
+            assert(self.public_address == public_address.lower())
         self.session = self._init_session()
+
+    # ------------ Signing Methods ------------
+
+    def sign_order(self, order):
+        order_hash = utils.get_order_hash(order)
+        signature = self.web3.eth.accounts.sign(
+            order_hash,
+            self.private_key
+        )
+        typedSignature = signature + '01'
+        return typedSignature
+
+    def sign_cancel_order(self, order):
+        cancel_order_hash = utils.get_cancel_order_hash(order)
+        signature = self.web3.eth.accounts.sign(
+            cancel_order_hash,
+            self.private_key
+        )
+        typedSignature = signature + '01'
+        return typedSignature
 
     # ------------ Helper Methods ------------
 
@@ -20,7 +57,8 @@ class Client(object):
         return session
 
     def _request(self, method, uri, **kwargs):
-        response = getattr(self.session, method)(uri, **kwargs)
+        complete_uri = self.BASE_API_URI + uri
+        response = getattr(self.session, method)(complete_uri, **kwargs)
         if not str(response.status_code).startswith('2'):
             raise Exception(response)
         return response.json()
@@ -39,28 +77,56 @@ class Client(object):
 
     # ------------ Public API ------------
 
+    def get_pairs(self):
+        '''
+        Return all tradable pairs
+        :returns: Array of trading pairs
+        :raises: Exception
+        '''
+        return self._get('pairs')
+
+    def get_balances(self, **params):
+        '''
+        Return all balances for an address and account number
+        :param owner: required
+        :type owner: string
+        :param account_number: required
+        :type account_number: string
+        :returns: Array of balances
+        :raises: Exception
+        '''
+        return self._get('balances', params=params)
+
     def get_orders(self, **params):
-        """
-        Return all open orders for an address
+        '''
+        Return all open orders for an address (paginated)
         :param makerAccountOwner: required
         :type makerAccountOwner: string
+        :param limit: required
+        :type limit: number
+        :param startingAfter: required
+        :type startingAfter: ISO-8601 string
         :returns: Array of existing orders
         :raises: Exception
-        """
+        '''
         return self._get('orders', params=params)
 
     def get_fills(self, **params):
-        """
-        Return all historical fills for an address
+        '''
+        Return all historical fills for an address (paginated)
         :param makerAccountOwner: required
         :type makerAccountOwner: string
+        :param limit: required
+        :type limit: number
+        :param startingAfter: required
+        :type startingAfter: ISO-8601 string
         :returns: Array of processed fills
         :raises: Exception
-        """
+        '''
         return self._get('fills', params=params)
 
     def create_order(self, **data):
-        """
+        '''
         Create an order
         :param fillOrKill: required e.g. false
         :type fillOrKill: bool
@@ -68,11 +134,23 @@ class Client(object):
         :type order: order
         :returns: None
         :raises: Exception
-        """
+        '''
+        order = data['order']
+        assert(order['makerMarket'])
+        assert(order['takerMarket'])
+        assert(order['makerAmount'])
+        assert(order['takerAmount'])
+        order.makerAccountOwner = self.public_address
+        order.makerAccountNumber = self.account_number
+        order.takerAccountOwner = self.TAKER_ACCOUNT_OWNER
+        order.takerAccountNumber = self.TAKER_ACCOUNT_NUMBER
+        order.expiration = '0'
+        order.salt = str(random.randInt(0, 2**256))
+        order.typedSignature = self.sign_order(data['order'])
         return self._post('orders', data=data)
 
     def delete_order(self, orderHash, typedSignature):
-        """
+        '''
         Delete an order
         :param orderHash: required
         :type orderHash: string
@@ -80,7 +158,7 @@ class Client(object):
         :type typedSignature: string
         :returns: None
         :raises: Exception
-        """
+        '''
         return self._delete(
             'orders/' + orderHash,
             headers={'Authorization': typedSignature}

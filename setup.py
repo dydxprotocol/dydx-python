@@ -6,7 +6,8 @@ REQUIREMENTS = [
     'web3==4.9.2',
     'pytest>=4.4.0,<5.0.0',
     'tox==3.13.2',
-    'setuptools'
+    'setuptools',
+    'eth_keys'
 ]
 
 setup(

@@ -1,4 +1,5 @@
 from web3 import Web3
+import eth_keys
 
 EIP712_ORDER_STRUCT_STRING = \
   'LimitOrder(' + \
@@ -107,3 +108,8 @@ def strip_hex_prefix(input):
 
 def address_to_bytes32(addr):
     return '0x000000000000000000000000' + strip_hex_prefix(addr)
+
+
+def private_key_to_public_address(key):
+    eth_keys_key = eth_keys.keys.PrivateKey(key)
+    return eth_keys_key.public_key.to_checksum_address().lower()
