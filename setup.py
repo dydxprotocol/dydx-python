@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 REQUIREMENTS = [
-     'requests>=2.5',	README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+    'requests>=2.5',
     'six==1.12',
     'web3==4.9.2',
     'pytest>=4.4.0,<5.0.0',
