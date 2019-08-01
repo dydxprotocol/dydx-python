@@ -3,6 +3,15 @@ from setuptools import setup, find_packages
 
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+REQUIREMENTS = [
+     'requests>=2.5',	README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+    'six==1.12',
+    'web3==4.9.2',
+    'pytest>=4.4.0,<5.0.0',
+    'tox==3.13.2',
+    'setuptools',
+    'eth_keys'
+]
 
 setup(
     name='dydx-python',
@@ -15,15 +24,7 @@ setup(
     author='dYdX Trading Inc.',
     license='Apache 2.0',
     author_email='contact@dydx.exchange',
-    install_requires=[
-        'requests>=2.5',
-        'six==1.12',
-        'web3==4.9.2',
-        'pytest>=4.4.0,<5.0.0',
-        'tox==3.13.2',
-        'setuptools',
-        'eth_keys'
-    ],
+    install_requires=REQUIREMENTS,
     keywords='dydx exchange rest api defi ethereum eth',
     classifiers=[
         'Intended Audience :: Developers',
