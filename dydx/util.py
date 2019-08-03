@@ -1,5 +1,11 @@
 from web3 import Web3
 import eth_keys
+import eth_account
+
+NETWORK_ID = 1
+
+VERIFYING_CONTRACT = \
+    '0xeb32d60A5cDED175cea9aFD0f2447297C125F2f4'
 
 EIP712_ORDER_STRUCT_STRING = \
   'LimitOrder(' + \
@@ -23,12 +29,29 @@ EIP712_DOMAIN_STRING = \
   'address verifyingContract' + \
   ')'
 
+EIP712_CANCEL_ORDER_STRUCT_STRING = \
+  'CancelLimitOrder(' + \
+  'bytes32 orderHash' + \
+  ')'
 
-def get_order_hash(order):
-    '''
-    Returns the final signable EIP712 hash for an order.
-    '''
-    domain_hash = Web3.soliditySha3(
+
+def get_eip712_hash(domain_hash, struct_hash):
+    return Web3.solidityKeccak(
+        [
+            'bytes2',
+            'bytes32',
+            'bytes32'
+        ],
+        [
+            '0x1901',
+            domain_hash,
+            struct_hash
+        ]
+    ).hex()
+
+
+def get_domain_hash():
+    return Web3.solidityKeccak(
         [
             'bytes32',
             'bytes32',
@@ -40,11 +63,17 @@ def get_order_hash(order):
             hash_string(EIP712_DOMAIN_STRING),
             hash_string('LimitOrders'),
             hash_string('1.0'),
-            1,
-            '0xeb32d60A5cDED175cea9aFD0f2447297C125F2f4'
+            NETWORK_ID,
+            address_to_bytes32(VERIFYING_CONTRACT)
         ]
-    )
-    struct_hash = Web3.soliditySha3(
+    ).hex()
+
+
+def get_order_hash(order):
+    '''
+    Returns the final signable EIP712 hash for an order.
+    '''
+    struct_hash = Web3.solidityKeccak(
         [
             'bytes32',
             'uint256',
@@ -60,42 +89,40 @@ def get_order_hash(order):
         ],
         [
             hash_string(EIP712_ORDER_STRUCT_STRING),
-            order.maker_market,
-            order.taker_market,
-            order.maker_amount,
-            order.taker_amount,
-            address_to_bytes32(order.maker_account_owner),
-            order.maker_account_number,
-            address_to_bytes32(order.taker_account_owner),
-            order.taker_account_number,
-            order.expiration,
-            order.salt
+            order['makerMarket'],
+            order['takerMarket'],
+            order['makerAmount'],
+            order['takerAmount'],
+            address_to_bytes32(order['makerAccountOwner']),
+            order['makerAccountNumber'],
+            address_to_bytes32(order['takerAccountOwner']),
+            order['takerAccountNumber'],
+            order['expiration'],
+            order['salt']
         ]
     )
-
-    return Web3.soliditySha3(
-        [
-            'bytes2',
-            'bytes32',
-            'bytes32'
-        ],
-        [
-            '0x1901',
-            domain_hash,
-            struct_hash
-        ]
-    )
+    return get_eip712_hash(get_domain_hash(), struct_hash)
 
 
 def get_cancel_order_hash(order_hash):
-    return Web3.soliditySha3(
-        ['string', 'bytes32'],
-        ['cancel', order_hash]
+    '''
+    Returns the final signable EIP712 hash for a cancel order API call.
+    '''
+    struct_hash = Web3.solidityKeccak(
+        [
+            'bytes32',
+            'bytes32',
+        ],
+        [
+            hash_string(EIP712_CANCEL_ORDER_STRUCT_STRING),
+            order_hash,
+        ]
     )
+    return get_eip712_hash(get_domain_hash(), struct_hash)
 
 
 def hash_string(input):
-    return Web3.soliditySha3(['string'], [input])
+    return Web3.solidityKeccak(['string'], [input]).hex()
 
 
 def strip_hex_prefix(input):
@@ -121,3 +148,25 @@ def normalize_private_key(private_key):
 def private_key_to_address(key):
     eth_keys_key = eth_keys.keys.PrivateKey(key)
     return eth_keys_key.public_key.to_checksum_address().lower()
+
+
+def sign_order(order, private_key):
+    order_hash = get_order_hash(order)
+    return sign_hash(order_hash, private_key)
+
+
+def sign_cancel_order(order_hash, private_key):
+    cancel_order_hash = get_cancel_order_hash(order_hash)
+    return sign_hash(cancel_order_hash, private_key)
+
+
+def sign_hash(hash, private_key):
+    result = eth_account.account.Account.sign_message(
+        eth_account.messages.encode_defunct(hexstr=hash),
+        private_key
+    )
+    return result['signature'].hex() + '01'
+
+
+def remove_nones(original):
+    return {k: v for k, v in original.items() if v is not None}
