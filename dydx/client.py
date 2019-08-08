@@ -21,7 +21,9 @@ class Client(object):
             raise ValueError('private_key/public_address mismatch')
         self.session = self._init_session()
 
-    # ------------ Helper Methods ------------
+    # -----------------------------------------------------------
+    # Helper Methods
+    # -----------------------------------------------------------
 
     def _init_session(self):
         session = requests.session()
@@ -51,7 +53,9 @@ class Client(object):
     def _delete(self, *args, **kwargs):
         return self._request('delete', *args, **kwargs)
 
-    # ------------ Public API ------------
+    # -----------------------------------------------------------
+    # Public API
+    # -----------------------------------------------------------
 
     def get_pairs(
         self
@@ -59,7 +63,7 @@ class Client(object):
         '''
         Return all tradable pairs
 
-        :returns: Array of trading pairs
+        :returns: list of trading pairs
 
         :raises: DydxAPIError
         '''
@@ -69,9 +73,9 @@ class Client(object):
         self
     ):
         '''
-        Return all balances for the loaded account
+        Return balances for the loaded account
 
-        :returns: Array of balances
+        :returns: list of balances
 
         :raises: DydxAPIError
         '''
@@ -86,15 +90,15 @@ class Client(object):
         number=0
     ):
         '''
-        Return all balances for an address and account number
+        Return balances for an address and account number
 
         :param address: required
-        :type address: address string
+        :type address: str (address)
 
         :param number: optional, defaults to 0
         :type number: number
 
-        :returns: Array of balances
+        :returns: list of balances
 
         :raises: DydxAPIError
         '''
@@ -109,21 +113,18 @@ class Client(object):
         startingBefore=None
     ):
         '''
-        Return all open orders for an address
+        Return open orders for the loaded account
 
-        :param makerAccountOwner: optional, defaults to self.public_address
-        :type makerAccountOwner: address string
-
-        :param makerAccountNumber: optional, defaults to self.account_number
-        :type makerAccountNumber: number
+        :param pairs: required
+        :type pairs: list of str
 
         :param limit: optional, defaults to 100
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: ISO-8601 string
+        :type startingBefore: str (ISO-8601)
 
-        :returns: Array of existing orders
+        :returns: list of existing orders
 
         :raises: DydxAPIError
         '''
@@ -144,10 +145,13 @@ class Client(object):
         startingBefore=None
     ):
         '''
-        Return all open orders for an address
+        Return all open orders
+
+        :param pairs: required
+        :type pairs: list of str
 
         :param makerAccountOwner: optional, defaults to self.public_address
-        :type makerAccountOwner: address string
+        :type makerAccountOwner: str (address)
 
         :param makerAccountNumber: optional, defaults to self.account_number
         :type makerAccountNumber: number
@@ -156,9 +160,9 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: ISO-8601 string
+        :type startingBefore: str (ISO-8601)
 
-        :returns: Array of existing orders
+        :returns: list of existing orders
 
         :raises: DydxAPIError
         '''
@@ -177,61 +181,65 @@ class Client(object):
         startingBefore=None
     ):
         '''
-        Return all historical fills for an address
+        Return historical fills for the loaded account
 
-        :param makerAccountOwner: optional, defaults to self.public_address
-        :type makerAccountOwner: address string
-
-        :param makerAccountNumber: optional, defaults to self.account_number
-        :type makerAccountNumber: number
+        :param pairs: required
+        :type pairs: list of str
 
         :param limit: optional, defaults to 100
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: ISO-8601 string
+        :type startingBefore: str (ISO-8601)
 
-        :returns: Array of processed fills
+        :returns: list of processed fills
 
         :raises: DydxAPIError
         '''
-        return self._get('dex/fills', params=utils.remove_nones({
-            'makerAccountOwner': self.public_address,
-            'makerAccountNumber': self.account_number,
-            'pairs': ','.join(pairs),
-            'limit': limit,
-            'startingBefore': startingBefore,
-        }))
+        return self.get_fills(
+            pairs=pairs,
+            makerAccountOwner=self.public_address,
+            makerAccountNumber=self.account_number,
+            limit=limit,
+            startingBefore=startingBefore
+        )
 
     def get_fills(
         self,
         pairs,
+        makerAccountOwner=None,
+        makerAccountNumber=None,
         limit=None,
         startingBefore=None
     ):
         '''
-        Return all historical fills for an address
+        Return all historical fills
 
-        :param makerAccountOwner: optional, defaults to self.public_address
-        :type makerAccountOwner: address string
+        :param pairs: required
+        :type pairs: list of str
 
-        :param makerAccountNumber: optional, defaults to self.account_number
+        :param makerAccountOwner: optional
+        :type makerAccountOwner: str (address)
+
+        :param makerAccountNumber: optional
         :type makerAccountNumber: number
 
         :param limit: optional, defaults to 100
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: ISO-8601 string
+        :type startingBefore: str (ISO-8601)
 
-        :returns: Array of processed fills
+        :returns: list of processed fills
 
         :raises: DydxAPIError
         '''
         return self._get('dex/fills', params=utils.remove_nones({
             'pairs': ','.join(pairs),
+            'makerAccountOwner': makerAccountOwner,
+            'makerAccountNumber': makerAccountNumber,
             'limit': limit,
-            'startingBefore': startingBefore,
+            'startingBefore': startingBefore
         }))
 
     def create_order(
@@ -264,7 +272,7 @@ class Client(object):
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
-        :returns: None
+        :returns: Order
 
         :raises: DydxAPIError
         '''
@@ -293,12 +301,12 @@ class Client(object):
         hash
     ):
         '''
-        Delete an order
+        Cancel an order
 
         :param hash: required
-        :type hash: string
+        :type hash: str
 
-        :returns: None
+        :returns: Order
 
         :raises: DydxAPIError
         '''
