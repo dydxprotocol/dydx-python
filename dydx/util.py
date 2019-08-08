@@ -1,6 +1,9 @@
 from web3 import Web3
 import eth_keys
 import eth_account
+import time
+
+FOUR_WEEKS_IN_SECONDS = 2419200
 
 NETWORK_ID = 1
 
@@ -170,3 +173,7 @@ def sign_hash(hash, private_key):
 
 def remove_nones(original):
     return {k: v for k, v in original.items() if v is not None}
+
+
+def epoch_in_four_weeks():
+    return int(time.time()) + FOUR_WEEKS_IN_SECONDS

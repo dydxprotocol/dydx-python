@@ -34,7 +34,7 @@ mock_get_pairs_json = {
     ]
 }
 
-mock_delete_order_json = {
+mock_cancel_order_json = {
     'orders': [
         {
             'uuid': 'd13aadc8-49fb-4420-a5a0-03c15b668705',
@@ -245,4 +245,4 @@ mock_get_balances_json = {
   }
 }
 
-mock_create_order_json = mock_delete_order_json
+mock_create_order_json = mock_cancel_order_json

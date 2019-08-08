@@ -65,39 +65,48 @@ class Client(object):
         '''
         return self._get('dex/pairs')
 
+    def get_my_balances(
+        self
+    ):
+        '''
+        Return all balances for the loaded account
+
+        :returns: Array of balances
+
+        :raises: DydxAPIError
+        '''
+        return self.get_balances(
+            address=self.public_address,
+            number=self.account_number
+        )
+
     def get_balances(
         self,
-        address=None,
-        number=None
+        address,
+        number=0
     ):
         '''
         Return all balances for an address and account number
 
-        :param address: optional
+        :param address: required
         :type address: address string
 
-        :param number: optional
+        :param number: optional, defaults to 0
         :type number: number
 
         :returns: Array of balances
 
         :raises: DydxAPIError
         '''
-        if address is None:
-            address = self.public_address
-        if number is None:
-            number = self.account_number
-
         return self._get('accounts/' + address, params=utils.remove_nones({
             'number': number
         }))
 
-    def get_orders(
+    def get_my_orders(
         self,
-        makerAccountOwner=None,
-        makerAccountNumber=None,
+        pairs,
         limit=None,
-        startingBefore=None,
+        startingBefore=None
     ):
         '''
         Return all open orders for an address
@@ -105,8 +114,8 @@ class Client(object):
         :param makerAccountOwner: optional, defaults to self.public_address
         :type makerAccountOwner: address string
 
-        :param makerAccountOwner: optional, defaults to self.account_number
-        :type makerAccountOwner: number
+        :param makerAccountNumber: optional, defaults to self.account_number
+        :type makerAccountNumber: number
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -118,24 +127,54 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        if makerAccountOwner is None:
-            makerAccountOwner = self.public_address
-        if makerAccountNumber is None:
-            makerAccountNumber = self.account_number
+        return self.get_orders(
+            pairs=pairs,
+            makerAccountOwner=self.public_address,
+            makerAccountNumber=self.account_number,
+            limit=limit,
+            startingBefore=startingBefore
+        )
 
+    def get_orders(
+        self,
+        pairs,
+        makerAccountOwner=None,
+        makerAccountNumber=None,
+        limit=None,
+        startingBefore=None
+    ):
+        '''
+        Return all open orders for an address
+
+        :param makerAccountOwner: optional, defaults to self.public_address
+        :type makerAccountOwner: address string
+
+        :param makerAccountNumber: optional, defaults to self.account_number
+        :type makerAccountNumber: number
+
+        :param limit: optional, defaults to 100
+        :type limit: number
+
+        :param startingBefore: optional, defaults to now
+        :type startingBefore: ISO-8601 string
+
+        :returns: Array of existing orders
+
+        :raises: DydxAPIError
+        '''
         return self._get('dex/orders', params=utils.remove_nones({
+            'pairs': ','.join(pairs),
             'makerAccountOwner': makerAccountOwner,
             'makerAccountNumber': makerAccountNumber,
             'limit': limit,
             'startingBefore': startingBefore,
         }))
 
-    def get_fills(
+    def get_my_fills(
         self,
-        makerAccountOwner=None,
-        makerAccountNumber=None,
+        pairs,
         limit=None,
-        startingBefore=None,
+        startingBefore=None
     ):
         '''
         Return all historical fills for an address
@@ -143,8 +182,8 @@ class Client(object):
         :param makerAccountOwner: optional, defaults to self.public_address
         :type makerAccountOwner: address string
 
-        :param makerAccountOwner: optional, defaults to self.account_number
-        :type makerAccountOwner: number
+        :param makerAccountNumber: optional, defaults to self.account_number
+        :type makerAccountNumber: number
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -156,14 +195,41 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        if makerAccountOwner is None:
-            makerAccountOwner = self.public_address
-        if makerAccountNumber is None:
-            makerAccountNumber = self.account_number
-
         return self._get('dex/fills', params=utils.remove_nones({
-            'makerAccountOwner': makerAccountOwner,
-            'makerAccountNumber': makerAccountNumber,
+            'makerAccountOwner': self.public_address,
+            'makerAccountNumber': self.account_number,
+            'pairs': ','.join(pairs),
+            'limit': limit,
+            'startingBefore': startingBefore,
+        }))
+
+    def get_fills(
+        self,
+        pairs,
+        limit=None,
+        startingBefore=None
+    ):
+        '''
+        Return all historical fills for an address
+
+        :param makerAccountOwner: optional, defaults to self.public_address
+        :type makerAccountOwner: address string
+
+        :param makerAccountNumber: optional, defaults to self.account_number
+        :type makerAccountNumber: number
+
+        :param limit: optional, defaults to 100
+        :type limit: number
+
+        :param startingBefore: optional, defaults to now
+        :type startingBefore: ISO-8601 string
+
+        :returns: Array of processed fills
+
+        :raises: DydxAPIError
+        '''
+        return self._get('dex/fills', params=utils.remove_nones({
+            'pairs': ','.join(pairs),
             'limit': limit,
             'startingBefore': startingBefore,
         }))
@@ -174,6 +240,7 @@ class Client(object):
         takerMarket,
         makerAmount,
         takerAmount,
+        expiration=utils.epoch_in_four_weeks(),
         fillOrKill=False
     ):
         '''
@@ -190,6 +257,9 @@ class Client(object):
 
         :param takerAmount: required
         :type takerAmount: number
+
+        :param expiration: optional, defaults to 28 days from now
+        :type expiration: number
 
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
@@ -208,7 +278,7 @@ class Client(object):
             'makerAccountNumber': self.account_number,
             'takerAccountOwner': self.TAKER_ACCOUNT_OWNER,
             'takerAccountNumber': self.TAKER_ACCOUNT_NUMBER,
-            'expiration': 0,
+            'expiration': expiration,
             'salt': random.randint(0, 2**256)
         }
         order['typedSignature'] = utils.sign_order(order, self.private_key)
@@ -218,7 +288,7 @@ class Client(object):
             'order': {k: str(v) for k, v in order.items()}
         }))
 
-    def delete_order(
+    def cancel_order(
         self,
         hash
     ):
