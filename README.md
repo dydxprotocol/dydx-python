@@ -9,24 +9,23 @@ The library is currently tested against Python versions 2.7, 3.4, 3.5, and 3.6
 pip install dydx-python
 ```
 
-## Usage
+## Documentation
+
+Check the [dYdX developer docs](https://docs.dydx.exchange/#/api?id=orderbook) for the API endpoint.
+
+## Example Usage
 
 ```python
 from dydx-python.dydx.client import Client
 
 # create a new client with a private key (string or bytearray)
-client = Client(private_key)
+client = Client('0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d')
 
 # get all trading pairs for dydx
 trading_pairs = client.get_pairs()
 
 # ...
 ```
-
-## Documentation
-
-(to be added soon)
-
 
 ## Testing
 ```
