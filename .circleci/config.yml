@@ -39,8 +39,8 @@ jobs:
           name: init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = @token" >> ~/.pypirc
-            echo -e "password = $PYPI_TOKEN" >> ~/.pypirc
+            echo -e "username = __token__" >> ~/.pypirc
+            echo -e "password = $PYPI_TOKEN_2" >> ~/.pypirc
       - run:
           name: create packages
           command: python3 setup.py sdist bdist_wheel
