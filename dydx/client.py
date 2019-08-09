@@ -171,7 +171,7 @@ class Client(object):
             'makerAccountOwner': makerAccountOwner,
             'makerAccountNumber': makerAccountNumber,
             'limit': limit,
-            'startingBefore': startingBefore,
+            'startingBefore': startingBefore
         }))
 
     def get_my_fills(
