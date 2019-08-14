@@ -1,4 +1,17 @@
-# dydx-python
+<p align="center"><img src="https://s3.amazonaws.com/dydx-assets/dydx_logo_black.svg" width="256" /></p>
+
+<div align="center">
+  <a href="https://circleci.com/gh/dydxprotocol/workflows/dydx-python/tree/master">
+    <img src="https://img.shields.io/circleci/project/github/dydxprotocol/dydx-python.svg" alt='CI' />
+  </a>
+  <a href='https://pypi.org/project/dydx-python'>
+    <img src='https://img.shields.io/pypi/v/dydx-python.svg' alt='PyPi'/>
+  </a>
+  <a href='https://github.com/dydxprotocol/dydx-python/blob/master/LICENSE'>
+    <img src='https://img.shields.io/github/license/dydxprotocol/dydx-python.svg?longCache=true' alt='License' />
+  </a>
+</div>
+
 dYdX Python API for Limit Orders
 
 The library is currently tested against Python versions 2.7, 3.4, 3.5, and 3.6
@@ -16,7 +29,7 @@ Check the [dYdX developer docs](https://docs.dydx.exchange/#/api?id=orderbook) f
 ## Example Usage
 
 ```python
-from dydx-python.dydx.client import Client
+from dydx.client import Client
 
 # create a new client with a private key (string or bytearray)
 client = Client(
