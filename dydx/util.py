@@ -2,13 +2,7 @@ from web3 import Web3
 import eth_keys
 import eth_account
 import time
-
-FOUR_WEEKS_IN_SECONDS = 2419200
-
-NETWORK_ID = 1
-
-VERIFYING_CONTRACT = \
-    '0xeb32d60A5cDED175cea9aFD0f2447297C125F2f4'
+import dydx.constants as consts
 
 EIP712_ORDER_STRUCT_STRING = \
   'LimitOrder(' + \
@@ -66,8 +60,8 @@ def get_domain_hash():
             hash_string(EIP712_DOMAIN_STRING),
             hash_string('LimitOrders'),
             hash_string('1.0'),
-            NETWORK_ID,
-            address_to_bytes32(VERIFYING_CONTRACT)
+            consts.NETWORK_ID,
+            address_to_bytes32(consts.LIMIT_ORDERS_ADDRESS)
         ]
     ).hex()
 
@@ -150,7 +144,7 @@ def normalize_private_key(private_key):
 
 def private_key_to_address(key):
     eth_keys_key = eth_keys.keys.PrivateKey(key)
-    return eth_keys_key.public_key.to_checksum_address().lower()
+    return eth_keys_key.public_key.to_checksum_address()
 
 
 def sign_order(order, private_key):
@@ -176,4 +170,4 @@ def remove_nones(original):
 
 
 def epoch_in_four_weeks():
-    return int(time.time()) + FOUR_WEEKS_IN_SECONDS
+    return int(time.time()) + consts.FOUR_WEEKS_IN_SECONDS
