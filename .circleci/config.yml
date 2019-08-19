@@ -3,7 +3,7 @@ jobs:
   test:
     docker:
       - image: circleci/python:3.6.4
-      - image: trufflesuite/ganache-cli:v6.4.1
+      - image: trufflesuite/ganache-cli:v6.6.0
         command: -d -k=petersburg -i 1001
     working_directory: ~/build
     steps:

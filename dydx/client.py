@@ -432,6 +432,21 @@ class Client(object):
     # Ethereum Transactions
     # -----------------------------------------------------------
 
+    def enable_limit_orders(
+        self
+    ):
+        '''
+        Set the LimitOrders contract as an operator for your account
+
+        :returns: transactionHash
+        '''
+        return self._send_eth_transaction(
+            method=self.solo_margin.functions.setOperators([{
+                'operator': consts.SOLO_MARGIN_ADDRESS,
+                'trusted': True
+            }])
+        )
+
     def set_allowance(
         self,
         market
