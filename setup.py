@@ -16,8 +16,11 @@ REQUIREMENTS = [
 
 setup(
     name='dydx-python',
-    version='0.2.2',
+    version='0.2.3',
     packages=find_packages(),
+    package_data={
+        'dydx': ['abi/*.json'],
+    },
     description='dYdX Python REST API for Limit Orders',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
