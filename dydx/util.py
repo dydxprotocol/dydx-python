@@ -171,3 +171,15 @@ def remove_nones(original):
 
 def epoch_in_four_weeks():
     return int(time.time()) + consts.FOUR_WEEKS_IN_SECONDS
+
+
+def token_to_wei(amount, market):
+    if market == 0:
+        decimals = consts.DECIMALS_WETH
+    elif market == 1:
+        decimals = consts.DECIMALS_DAI
+    elif market == 2:
+        decimals = consts.DECIMALS_USDC
+    else:
+        raise ValueError('Invalid market number')
+    return int(amount * (10 ** decimals))

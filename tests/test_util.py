@@ -1,5 +1,6 @@
 import pytest
 import dydx.util as utils
+import dydx.constants as consts
 
 PRIVATE_KEY_1 = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # noqa: E501
 PRIVATE_KEY_2 = '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1'  # noqa: E501
@@ -85,3 +86,11 @@ class TestUtil():
             private_key=PRIVATE_KEY_1
         )
         assert signature == CANCEL_ORDER_SIGNATURE
+
+    def test_token_to_wei(self):
+        assert utils.token_to_wei(11, consts.MARKET_WETH) == \
+            11 * (10 ** 18)
+        assert utils.token_to_wei(22, consts.MARKET_DAI) == \
+            22 * (10 ** 18)
+        assert utils.token_to_wei(33, consts.MARKET_USDC) == \
+            33 * (10 ** 6)
