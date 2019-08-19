@@ -50,6 +50,10 @@ trading_pairs = client.get_pairs()
 # Ethereum Transactions
 # -----------------------------------------------------------
 
+# Enable Limit Orders
+# must be called once, ever (only necessary during beta testing)
+tx_hash = client.enable_limit_orders()
+
 # deposit 10 ETH
 # does not require set_allowance
 tx_hash = client.deposit(market=0, wei=(10 * 1e18)) # ETH has 18 decimal places
