@@ -16,7 +16,7 @@ REQUIREMENTS = [
 
 setup(
     name='dydx-python',
-    version='0.2.0',
+    version='0.2.1',
     packages=find_packages(),
     description='dYdX Python REST API for Limit Orders',
     long_description=LONG_DESCRIPTION,
