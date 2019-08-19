@@ -105,8 +105,6 @@ class Client(object):
             options['value'] = 0
         if 'gas' not in options:
             options['gas'] = method.estimateGas(options)
-
-        print(options)
         return method.transact(options).hex()
 
     def _operate(
