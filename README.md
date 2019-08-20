@@ -28,6 +28,8 @@ Check the [dYdX developer docs](https://docs.dydx.exchange/#/api?id=orderbook) f
 
 ## Example Usage
 
+### Initializing the client
+
 ```python
 from dydx.client import Client
 import dydx.constants as consts
@@ -38,11 +40,13 @@ client = Client(
     private_key='0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
     node='https://parity.expotrading.com'
 )
+```
 
-# -----------------------------------------------------------
-# API Calls
-# -----------------------------------------------------------
+### HTTP API Calls
 
+#### Trading Pairs
+
+```python
 # Get all trading pairs for dydx
 pairs = client.get_pairs()
 '''
@@ -94,7 +98,11 @@ pairs = {
     ]
 }
 '''
+```
 
+#### Account Balances
+
+```python
 # Get my on-chain balances
 my_balances = client.get_my_balances()
 
@@ -131,7 +139,11 @@ balances = {
     }
 }
 '''
+```
 
+#### Open Orders
+
+```python
 # Get orders created by my account for both sides of the book
 my_orders = client.get_my_orders(
     pairs=['WETH-DAI', 'DAI-WETH'],
@@ -180,7 +192,11 @@ orders = {
     ]
 }
 '''
+```
 
+#### Historical Fills
+
+```python
 # Get fills created by my account for both sides of the orderbook
 my_fills = client.get_my_fills(
     pairs=['WETH-DAI', 'DAI-WETH'],
@@ -241,7 +257,11 @@ fills = {
     ]
 }
 '''
+```
 
+#### Create an Order
+
+```python
 # Create order to SELL 10 ETH for 2000 DAI (a price of 200 DAI/ETH)
 created_order = client.create_order(
     makerMarket=consts.MARKET_WETH,
@@ -275,7 +295,11 @@ created_order = {
     }
 }
 '''
+```
 
+#### Cancel an Order
+
+```python
 # Cancel the previously created order
 order_hash = created_order['order']['id']
 canceled_order = client.cancel_order(
@@ -307,11 +331,11 @@ canceled_order = {
     }
 }
 '''
+```
 
-# -----------------------------------------------------------
-# Ethereum Transactions
-# -----------------------------------------------------------
+### Ethereum Transactions
 
+```python
 # Enable Limit Orders
 # must be called once, ever (only necessary during beta testing)
 tx_hash = client.enable_limit_orders() # does not wait for transaction to be mined
