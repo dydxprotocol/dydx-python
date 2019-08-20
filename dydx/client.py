@@ -95,17 +95,34 @@ class Client(object):
     def _send_eth_transaction(
         self,
         method,
-        options=dict()
+        options=None
     ):
+        if options is None:
+            options = dict()
         if 'from' not in options:
             options['from'] = self.public_address
+        if 'nonce' not in options:
+            options['nonce'] = \
+                self.web3.eth.getTransactionCount(self.public_address)
         if 'gasPrice' not in options:
-            options['gasPrice'] = self.web3.eth.gasPrice
+            try:
+                options['gasPrice'] = \
+                    self.web3.eth.gasPrice + consts.DEFAULT_GAS_PRICE_ADDITION
+            except Exception:
+                options['gasPrice'] = consts.DEFAULT_GAS_PRICE
         if 'value' not in options:
             options['value'] = 0
         if 'gas' not in options:
-            options['gas'] = method.estimateGas(options)
-        return method.transact(options).hex()
+            try:
+                options['gas'] = int(
+                    method.estimateGas(options) *
+                    consts.DEFAULT_GAS_MULTIPLIER
+                )
+            except Exception:
+                options['gas'] = consts.DEFAULT_GAS_AMOUNT
+        tx = method.buildTransaction(options)
+        stx = self.web3.eth.account.sign_transaction(tx, self.private_key)
+        return self.web3.eth.sendRawTransaction(stx.rawTransaction).hex()
 
     def _operate(
         self,
@@ -164,6 +181,19 @@ class Client(object):
                     value=0
                 )
             )
+
+    def _get_token_contract(
+        self,
+        market
+    ):
+        if market == 0:
+            return self.weth_contract
+        elif market == 1:
+            return self.dai_contract
+        elif market == 2:
+            return self.usdc_contract
+        else:
+            raise ValueError('Invalid market number')
 
     # -----------------------------------------------------------
     # Public API
@@ -360,7 +390,7 @@ class Client(object):
         takerMarket,
         makerAmount,
         takerAmount,
-        expiration=utils.epoch_in_four_weeks(),
+        expiration=None,
         fillOrKill=False
     ):
         '''
@@ -398,7 +428,7 @@ class Client(object):
             'makerAccountNumber': self.account_number,
             'takerAccountOwner': self.TAKER_ACCOUNT_OWNER,
             'takerAccountNumber': self.TAKER_ACCOUNT_NUMBER,
-            'expiration': expiration,
+            'expiration': expiration or utils.epoch_in_four_weeks(),
             'salt': random.randint(0, 2**256)
         }
         order['typedSignature'] = utils.sign_order(order, self.private_key)
@@ -440,9 +470,19 @@ class Client(object):
 
         :returns: transactionHash
         '''
+        try:
+            is_operator = self.solo_.functions.getIsLocalOperator(
+                self.public_address,
+                consts.LIMIT_ORDERS_ADDRESS
+            ).call()
+            if is_operator:
+                return
+        except Exception:
+            pass
+
         return self._send_eth_transaction(
             method=self.solo_margin.functions.setOperators([{
-                'operator': consts.SOLO_MARGIN_ADDRESS,
+                'operator': consts.LIMIT_ORDERS_ADDRESS,
                 'trusted': True
             }])
         )
@@ -462,14 +502,18 @@ class Client(object):
 
         :raises: ValueError
         '''
-        if market == 0:
-            contract = self.weth_contract
-        elif market == 1:
-            contract = self.dai_contract
-        elif market == 2:
-            contract = self.usdc_contract
-        else:
-            raise ValueError('Invalid market number')
+        contract = self._get_token_contract(market)
+
+        # if allowance is already set, don't set allowance
+        try:
+            allowance = contract.functions.allowance(
+                self.public_address,
+                consts.SOLO_MARGIN_ADDRESS
+            ).call()
+            if allowance != 0:
+                return
+        except Exception:
+            pass
 
         return self._send_eth_transaction(
             method=contract.functions.approve(
@@ -548,3 +592,17 @@ class Client(object):
             wei=0,
             ref=consts.REFERENCE_TARGET
         )
+
+    def get_receipt(
+        self,
+        tx_hash
+    ):
+        '''
+        Wait for a transaction to be mined and return the receipt
+
+        :param tx_hash: required
+        :type tx_hash: number
+
+        :returns: transactionReceipt
+        '''
+        return self.web3.eth.waitForTransactionReceipt(tx_hash)

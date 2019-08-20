@@ -375,17 +375,22 @@ class TestClient():
     # Ethereum Transactions
     # -----------------------------------------------------------
 
+    def _validate_tx_hash(self, client, tx_hash):
+        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        receipt = client.get_receipt(tx_hash)
+        assert receipt['transactionHash'].hex() == tx_hash
+
     # ------------ set_allowance ------------
 
     def test_set_allowance_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.set_allowance(market=0)
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_set_allowance_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.set_allowance(market=1)
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_set_allowance_unknown_failure(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
@@ -398,7 +403,7 @@ class TestClient():
     def test_enable_limit_orders_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.enable_limit_orders()
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     # ------------ deposit ------------
 
@@ -408,7 +413,7 @@ class TestClient():
             market=0,
             wei=1000
         )
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_deposit_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
@@ -416,7 +421,7 @@ class TestClient():
             market=1,
             wei=1000
         )
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_deposit_unknown_failure(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
@@ -435,7 +440,7 @@ class TestClient():
             market=0,
             wei=1000
         )
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_withdraw_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
@@ -443,7 +448,7 @@ class TestClient():
             market=1,
             wei=1000
         )
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_withdraw_unknown_failure(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
@@ -459,12 +464,12 @@ class TestClient():
     def test_withdraw_to_zero_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.withdraw_to_zero(market=0)
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_withdraw_to_zero_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.withdraw_to_zero(market=1)
-        assert re.compile("^0x[a-f0-9]{64}").match(tx_hash)
+        self._validate_tx_hash(client, tx_hash)
 
     def test_withdraw_to_zero_unknown_failure(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
