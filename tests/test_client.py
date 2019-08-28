@@ -219,7 +219,7 @@ class TestClient():
                 + ORDER_HASH
             rm.get(uri, json=json_obj)
             result = client.get_order(
-                client.public_address
+                ORDER_HASH
             )
             assert result == json_obj
 
