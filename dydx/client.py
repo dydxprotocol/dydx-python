@@ -418,7 +418,7 @@ class Client(object):
         :param startingBefore: optional, defaults to now
         :type startingBefore: str (ISO-8601)
 
-        :returns: list of processed trades 
+        :returns: list of processed trades
 
         :raises: DydxAPIError
         '''
