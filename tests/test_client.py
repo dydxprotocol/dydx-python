@@ -209,6 +209,21 @@ class TestClient():
             )
             assert result == json_obj
 
+    # ------------ get_order ---------------
+    def test_get_order_default_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_order_json
+            uri = 'https://api.dydx.exchange/v1/dex/orders/' \
+                + client.public_address
+            rm.get(uri, json=json_obj)
+            print("public address")
+            print(client.public_address)
+            result = client.get_order(
+                client.public_address
+            )
+            assert result == json_obj
+
     # ------------ get_my_fills ------------
 
     def test_get_my_fills_no_pairs_error(self):
@@ -283,6 +298,86 @@ class TestClient():
                 + '&startingBefore=' + startingBefore
             rm.get(uri, json=json_obj)
             result = client.get_fills(
+                pairs=PAIRS,
+                limit=limit,
+                startingBefore=startingBefore
+            )
+            assert result == json_obj
+
+    # ------------ get_my_trades ------------
+
+    def test_get_my_trades_no_pairs_error(self):
+        client = Client(PRIVATE_KEY_1)
+        with pytest.raises(TypeError) as error:
+            client.get_my_trades()
+        assert 'required positional argument: \'pairs\'' in str(error.value)
+
+    def test_get_my_trades_default_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_trades_json
+            uri = 'https://api.dydx.exchange/v1/dex/trades' \
+                + '?makerAccountOwner=' + client.public_address \
+                + '&makerAccountNumber=' + str(client.account_number) \
+                + '&pairs=' + ','.join(PAIRS)
+            rm.get(uri, json=json_obj)
+            result = client.get_my_trades(
+                pairs=PAIRS
+            )
+            assert result == json_obj
+
+    def test_get_my_trades_specified_success(self):
+        client = Client(PRIVATE_KEY_1)
+        limit = 1234
+        startingBefore = datetime.datetime.utcnow().isoformat()
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_trades_json
+            uri = 'https://api.dydx.exchange/v1/dex/trades' \
+                + '?makerAccountOwner=' + client.public_address \
+                + '&makerAccountNumber=' + str(client.account_number) \
+                + '&pairs=' + ','.join(PAIRS) \
+                + '&limit=' + str(limit) \
+                + '&startingBefore=' + startingBefore
+            rm.get(uri, json=json_obj)
+            result = client.get_my_trades(
+                pairs=PAIRS,
+                limit=limit,
+                startingBefore=startingBefore
+            )
+            assert result == json_obj
+
+    # ------------ get_trades ------------
+
+    def test_get_trades_no_pairs_error(self):
+        client = Client(PRIVATE_KEY_1)
+        with pytest.raises(TypeError) as error:
+            client.get_trades()
+        assert 'required positional argument: \'pairs\'' in str(error.value)
+
+    def test_get_trades_default_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_trades_json
+            uri = 'https://api.dydx.exchange/v1/dex/trades' \
+                + '?pairs=' + ','.join(PAIRS)
+            rm.get(uri, json=json_obj)
+            result = client.get_trades(
+                pairs=PAIRS
+            )
+            assert result == json_obj
+
+    def test_get_trades_specified_success(self):
+        client = Client(PRIVATE_KEY_1)
+        limit = 1234
+        startingBefore = datetime.datetime.utcnow().isoformat()
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_trades_json
+            uri = 'https://api.dydx.exchange/v1/dex/trades' \
+                + '?pairs=' + ','.join(PAIRS) \
+                + '&limit=' + str(limit) \
+                + '&startingBefore=' + startingBefore
+            rm.get(uri, json=json_obj)
+            result = client.get_trades(
                 pairs=PAIRS,
                 limit=limit,
                 startingBefore=startingBefore

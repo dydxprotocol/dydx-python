@@ -316,6 +316,22 @@ class Client(object):
             'startingBefore': startingBefore
         }))
 
+    def get_order(
+        self,
+        orderId,
+    ):
+        '''
+        Return an order by id
+
+        :param id: required
+        :type id: str
+
+        :returns: existing order
+
+        :raises: DydxAPIError
+        '''
+        return self._get('dex/orders/'+orderId)
+
     def get_my_fills(
         self,
         pairs,
@@ -384,6 +400,74 @@ class Client(object):
             'startingBefore': startingBefore
         }))
 
+    def get_my_trades(
+        self,
+        pairs,
+        limit=None,
+        startingBefore=None
+    ):
+        '''
+        Return historical trades for the loaded account
+
+        :param pairs: required
+        :type pairs: list of str
+
+        :param limit: optional, defaults to 100
+        :type limit: number
+
+        :param startingBefore: optional, defaults to now
+        :type startingBefore: str (ISO-8601)
+
+        :returns: list of processed trades 
+
+        :raises: DydxAPIError
+        '''
+        return self.get_trades(
+            pairs=pairs,
+            makerAccountOwner=self.public_address,
+            makerAccountNumber=self.account_number,
+            limit=limit,
+            startingBefore=startingBefore
+        )
+
+    def get_trades(
+        self,
+        pairs,
+        makerAccountOwner=None,
+        makerAccountNumber=None,
+        limit=None,
+        startingBefore=None
+    ):
+        '''
+        Return all historical trades
+
+        :param pairs: required
+        :type pairs: list of str
+
+        :param makerAccountOwner: optional
+        :type makerAccountOwner: str (address)
+
+        :param makerAccountNumber: optional
+        :type makerAccountNumber: number
+
+        :param limit: optional, defaults to 100
+        :type limit: number
+
+        :param startingBefore: optional, defaults to now
+        :type startingBefore: str (ISO-8601)
+
+        :returns: list of processed trades
+
+        :raises: DydxAPIError
+        '''
+        return self._get('dex/trades', params=utils.remove_nones({
+            'pairs': ','.join(pairs),
+            'makerAccountOwner': makerAccountOwner,
+            'makerAccountNumber': makerAccountNumber,
+            'limit': limit,
+            'startingBefore': startingBefore
+        }))
+
     def create_order(
         self,
         makerMarket,
@@ -391,7 +475,8 @@ class Client(object):
         makerAmount,
         takerAmount,
         expiration=None,
-        fillOrKill=False
+        fillOrKill=False,
+        clientId=None,
     ):
         '''
         Create an order
@@ -414,6 +499,9 @@ class Client(object):
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
+        :param clientId: optional, defaults to None
+        :type clientId: string
+
         :returns: Order
 
         :raises: DydxAPIError
@@ -435,6 +523,7 @@ class Client(object):
 
         return self._post('dex/orders', data=json.dumps({
             'fillOrKill': fillOrKill,
+            'clientId': clientId,
             'order': {k: str(v) for k, v in order.items()}
         }))
 
