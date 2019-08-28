@@ -521,11 +521,11 @@ class Client(object):
         }
         order['typedSignature'] = utils.sign_order(order, self.private_key)
 
-        return self._post('dex/orders', data=json.dumps({
+        return self._post('dex/orders', data=json.dumps(utils.remove_nones({
             'fillOrKill': fillOrKill,
             'clientId': clientId,
             'order': {k: str(v) for k, v in order.items()}
-        }))
+        })))
 
     def cancel_order(
         self,
