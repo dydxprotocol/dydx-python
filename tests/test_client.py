@@ -210,15 +210,14 @@ class TestClient():
             assert result == json_obj
 
     # ------------ get_order ---------------
+
     def test_get_order_default_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_get_order_json
             uri = 'https://api.dydx.exchange/v1/dex/orders/' \
-                + client.public_address
+                + ORDER_HASH
             rm.get(uri, json=json_obj)
-            print("public address")
-            print(client.public_address)
             result = client.get_order(
                 client.public_address
             )
