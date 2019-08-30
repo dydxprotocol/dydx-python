@@ -28,8 +28,11 @@ EIP712_DOMAIN_STRING = \
 
 EIP712_CANCEL_ORDER_STRUCT_STRING = \
   'CancelLimitOrder(' + \
-  'bytes32 orderHash' + \
+  'string action,' + \
+  'bytes32[] orderHashes' + \
   ')'
+
+EIP712_CANCEL_ACTION = 'Cancel Orders'
 
 
 def get_eip712_hash(domain_hash, struct_hash):
@@ -59,7 +62,7 @@ def get_domain_hash():
         [
             hash_string(EIP712_DOMAIN_STRING),
             hash_string('LimitOrders'),
-            hash_string('1.0'),
+            hash_string('1.1'),
             consts.NETWORK_ID,
             address_to_bytes32(consts.LIMIT_ORDERS_ADDRESS)
         ]
@@ -97,7 +100,7 @@ def get_order_hash(order):
             order['expiration'],
             order['salt']
         ]
-    )
+    ).hex()
     return get_eip712_hash(get_domain_hash(), struct_hash)
 
 
@@ -105,16 +108,26 @@ def get_cancel_order_hash(order_hash):
     '''
     Returns the final signable EIP712 hash for a cancel order API call.
     '''
+    action_hash = Web3.solidityKeccak(
+        ['string'],
+        [EIP712_CANCEL_ACTION]
+    ).hex()
+    orders_hash = Web3.solidityKeccak(
+        ['bytes32'],
+        [order_hash]
+    ).hex()
     struct_hash = Web3.solidityKeccak(
         [
+            'bytes32',
             'bytes32',
             'bytes32',
         ],
         [
             hash_string(EIP712_CANCEL_ORDER_STRUCT_STRING),
-            order_hash,
+            action_hash,
+            orders_hash,
         ]
-    )
+    ).hex()
     return get_eip712_hash(get_domain_hash(), struct_hash)
 
 
