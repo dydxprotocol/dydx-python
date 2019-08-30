@@ -492,13 +492,6 @@ class TestClient():
             client.set_allowance(market=3)
         assert 'Invalid market number' in str(error.value)
 
-    # ------------ enable_limit_orders ------------
-
-    def test_enable_limit_orders_success(self):
-        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.enable_limit_orders()
-        self._validate_tx_hash(client, tx_hash)
-
     # ------------ deposit ------------
 
     def test_deposit_eth_success(self):
