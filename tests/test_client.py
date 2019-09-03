@@ -26,10 +26,10 @@ ORDER = {
     'expiration': 1234,
     'salt': 4321
 }
-ORDER_HASH = '0x998ec84efeb9d5b2e20820722d90a9430ec7085ad45bbd7b2cd6b312abe294c5'  # noqa: E501
-CANCEL_ORDER_HASH = '0x54da43ec40e5ae61b2dac3d9068cd56d257459bc105ad0317857b7b4f66e101c'  # noqa: E501
-ORDER_SIGNATURE = '0x342f7533477aff89c3d25facdecb3875a68ccb5271a79dca64d19c822a6a8d560dba1ce392a50d7cd0d76ee45cfd8e6627764b012970bf43f6f8fd61677cf2ba1c01'  # noqa: E501
-CANCEL_ORDER_SIGNATURE = '0xe1381f81b47132cc23809ddff717b40d52f3a4c7cbb49f85aadf2f893c6f433c05d5cc4143694630ac504429b1c325251dec3dde9fec6c02f95246663c0f4b7f1c01'  # noqa: E501
+ORDER_HASH = '0x444df3e619ce1865bb0138e89b3e92c29b1e57a6b35c4708822923bc60985c3d'  # noqa: E501
+CANCEL_ORDER_HASH = '0x45170c4ba6a19e3c9e25a4f3b3d65b9f2d988ad80f7a270528c03a7c484e1774'  # noqa: E501
+ORDER_SIGNATURE = '0x94c3e787666fa8d2611ce4543ced732e0f4591958d8a12feded84746bcde457f1dab3fc66cafc5eda9c6e755f0f82f4049353cad165a5187d4ec66d365c9c2991b01'  # noqa: E501
+CANCEL_ORDER_SIGNATURE = '0x3d29b75f6aad6db4cc02259bcaa98f465a164392b1c4743d7d0f53b73f64f29f00b495dc132b9a63b4aa613c15909878be1274b575549a959d9586eb7b5e520a1b01'  # noqa: E501
 PAIRS = ['WETH-DAI', 'DAI-WETH']
 LOCAL_NODE = 'http://0.0.0.0:8545'
 
@@ -491,13 +491,6 @@ class TestClient():
         with pytest.raises(ValueError) as error:
             client.set_allowance(market=3)
         assert 'Invalid market number' in str(error.value)
-
-    # ------------ enable_limit_orders ------------
-
-    def test_enable_limit_orders_success(self):
-        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.enable_limit_orders()
-        self._validate_tx_hash(client, tx_hash)
 
     # ------------ deposit ------------
 
