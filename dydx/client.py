@@ -318,7 +318,7 @@ class Client(object):
             'makerAccountNumber': makerAccountNumber,
             'limit': limit,
             'startingBefore': startingBefore,
-            'pairs': ','.join(status),
+            'status': ','.join(status),
         }))
 
     def get_order(
