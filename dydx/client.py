@@ -284,7 +284,7 @@ class Client(object):
         makerAccountOwner=None,
         makerAccountNumber=None,
         limit=None,
-        startingBefore=None
+        startingBefore=None,
         status=None
     ):
         '''

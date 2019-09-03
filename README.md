@@ -147,7 +147,7 @@ balances = {
 # Get orders created by my account for both sides of the book
 my_orders = client.get_my_orders(
     pairs=['WETH-DAI', 'DAI-WETH'],
-	status=['OPEN', 'PARTIALLY_FILLED'],
+    status=['OPEN', 'PARTIALLY_FILLED'],
     limit=None,
     startingBefore=None
 )
