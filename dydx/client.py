@@ -285,6 +285,7 @@ class Client(object):
         makerAccountNumber=None,
         limit=None,
         startingBefore=None
+        status=None
     ):
         '''
         Return all open orders
@@ -304,6 +305,9 @@ class Client(object):
         :param startingBefore: optional, defaults to now
         :type startingBefore: str (ISO-8601)
 
+        :param status: optional, defaults to ['OPEN','PARTIALLY_FILLED']
+        :type status: list of str
+
         :returns: list of existing orders
 
         :raises: DydxAPIError
@@ -313,7 +317,8 @@ class Client(object):
             'makerAccountOwner': makerAccountOwner,
             'makerAccountNumber': makerAccountNumber,
             'limit': limit,
-            'startingBefore': startingBefore
+            'startingBefore': startingBefore,
+            'pairs': ','.join(status),
         }))
 
     def get_order(
