@@ -130,12 +130,9 @@ class Client(object):
         market,
         wei,
         ref,
+        otherAddress
     ):
-        if (market == 0):
-            otherAddress = consts.PAYABLE_PROXY_ADDRESS
-        elif market == 1 or market == 2:
-            otherAddress = self.public_address
-        else:
+        if market < 0 or market >= consts.MARKET_INVALID:
             raise ValueError('Invalid market number')
 
         isDeposit = (actionType == consts.ACTION_TYPE_DEPOSIT)
@@ -155,7 +152,8 @@ class Client(object):
             'amount': amountField,
             'primaryMarketId': market,
             'secondaryMarketId': 0,
-            'otherAddress': otherAddress,
+            'otherAddress':
+                consts.PAYABLE_PROXY_ADDRESS if market == 0 else otherAddress,
             'otherAccountId': 0,
             'data': '0x'
         }]
@@ -165,7 +163,7 @@ class Client(object):
                 self.payable_proxy.functions.operate(
                     accounts,
                     operations,
-                    self.public_address
+                    otherAddress
                 ),
                 options=dict(
                     value=wei
@@ -608,13 +606,15 @@ class Client(object):
             actionType=consts.ACTION_TYPE_DEPOSIT,
             market=market,
             wei=wei,
-            ref=consts.REFERENCE_DELTA
+            ref=consts.REFERENCE_DELTA,
+            otherAddress=self.public_address
         )
 
     def withdraw(
         self,
         market,
-        wei
+        wei,
+        to=None
     ):
         '''
         Withdraw funds from the protocol
@@ -625,6 +625,9 @@ class Client(object):
         :param wei: required
         :type wei: number
 
+        :param to: optional
+        :type to: str (address)
+
         :returns: transactionHash
 
         :raises: ValueError
@@ -633,18 +636,23 @@ class Client(object):
             actionType=consts.ACTION_TYPE_WITHDRAW,
             market=market,
             wei=wei,
-            ref=consts.REFERENCE_DELTA
+            ref=consts.REFERENCE_DELTA,
+            otherAddress=(to or self.public_address)
         )
 
     def withdraw_to_zero(
         self,
-        market
+        market,
+        to=None
     ):
         '''
         Withdraw all funds from the protocol for one asset
 
         :param market: required
         :type market: number
+
+        :param to: optional
+        :type to: str (address)
 
         :returns: transactionHash
 
@@ -654,7 +662,8 @@ class Client(object):
             actionType=consts.ACTION_TYPE_WITHDRAW,
             market=market,
             wei=0,
-            ref=consts.REFERENCE_TARGET
+            ref=consts.REFERENCE_TARGET,
+            otherAddress=(to or self.public_address)
         )
 
     def get_receipt(

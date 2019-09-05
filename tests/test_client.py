@@ -478,18 +478,18 @@ class TestClient():
 
     def test_set_allowance_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.set_allowance(market=0)
+        tx_hash = client.set_allowance(market=consts.MARKET_WETH)
         self._validate_tx_hash(client, tx_hash)
 
     def test_set_allowance_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.set_allowance(market=1)
+        tx_hash = client.set_allowance(market=consts.MARKET_DAI)
         self._validate_tx_hash(client, tx_hash)
 
     def test_set_allowance_unknown_failure(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(ValueError) as error:
-            client.set_allowance(market=3)
+            client.set_allowance(market=consts.MARKET_INVALID)
         assert 'Invalid market number' in str(error.value)
 
     # ------------ deposit ------------
@@ -497,7 +497,7 @@ class TestClient():
     def test_deposit_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.deposit(
-            market=0,
+            market=consts.MARKET_WETH,
             wei=1000
         )
         self._validate_tx_hash(client, tx_hash)
@@ -505,7 +505,7 @@ class TestClient():
     def test_deposit_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.deposit(
-            market=1,
+            market=consts.MARKET_DAI,
             wei=1000
         )
         self._validate_tx_hash(client, tx_hash)
@@ -514,7 +514,7 @@ class TestClient():
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(ValueError) as error:
             client.deposit(
-                market=3,
+                market=consts.MARKET_INVALID,
                 wei=1000
             )
         assert 'Invalid market number' in str(error.value)
@@ -524,7 +524,7 @@ class TestClient():
     def test_withdraw_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.withdraw(
-            market=0,
+            market=consts.MARKET_WETH,
             wei=1000
         )
         self._validate_tx_hash(client, tx_hash)
@@ -532,8 +532,26 @@ class TestClient():
     def test_withdraw_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.withdraw(
-            market=1,
+            market=consts.MARKET_DAI,
             wei=1000
+        )
+        self._validate_tx_hash(client, tx_hash)
+
+    def test_withdraw_eth_to_success(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        tx_hash = client.withdraw(
+            market=consts.MARKET_WETH,
+            wei=1000,
+            to=ADDRESS_2
+        )
+        self._validate_tx_hash(client, tx_hash)
+
+    def test_withdraw_dai_to_success(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        tx_hash = client.withdraw(
+            market=consts.MARKET_DAI,
+            wei=1000,
+            to=ADDRESS_2
         )
         self._validate_tx_hash(client, tx_hash)
 
@@ -541,7 +559,7 @@ class TestClient():
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(ValueError) as error:
             client.withdraw(
-                market=3,
+                market=consts.MARKET_INVALID,
                 wei=1000
             )
         assert 'Invalid market number' in str(error.value)
@@ -550,16 +568,36 @@ class TestClient():
 
     def test_withdraw_to_zero_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.withdraw_to_zero(market=0)
+        tx_hash = client.withdraw_to_zero(
+            market=consts.MARKET_WETH
+        )
         self._validate_tx_hash(client, tx_hash)
 
     def test_withdraw_to_zero_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.withdraw_to_zero(market=1)
+        tx_hash = client.withdraw_to_zero(
+            market=consts.MARKET_DAI
+        )
+        self._validate_tx_hash(client, tx_hash)
+
+    def test_withdraw_to_zero_eth_to_success(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        tx_hash = client.withdraw_to_zero(
+            market=consts.MARKET_WETH,
+            to=ADDRESS_2
+        )
+        self._validate_tx_hash(client, tx_hash)
+
+    def test_withdraw_to_zero_dai_to_success(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        tx_hash = client.withdraw_to_zero(
+            market=consts.MARKET_DAI,
+            to=ADDRESS_2
+        )
         self._validate_tx_hash(client, tx_hash)
 
     def test_withdraw_to_zero_unknown_failure(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(ValueError) as error:
-            client.withdraw_to_zero(market=3)
+            client.withdraw_to_zero(market=consts.MARKET_INVALID)
         assert 'Invalid market number' in str(error.value)
