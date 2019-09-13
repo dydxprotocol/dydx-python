@@ -146,28 +146,37 @@ class Client(object):
             'ref': ref,
             'value': wei
         }
+        actualWithdrawOrDepositAddress = (
+            consts.PAYABLE_PROXY_ADDRESS
+            if market == consts.MARKET_WETH
+            else otherAddress
+        )
         operations = [{
             'actionType': actionType,
             'accountId': 0,
             'amount': amountField,
             'primaryMarketId': market,
             'secondaryMarketId': 0,
-            'otherAddress':
-                consts.PAYABLE_PROXY_ADDRESS if market == 0 else otherAddress,
+            'otherAddress': actualWithdrawOrDepositAddress,
             'otherAccountId': 0,
             'data': '0x'
         }]
+        txOptions = dict(
+            value=(
+                wei
+                if (isDeposit and market == consts.MARKET_WETH)
+                else 0
+            )
+        )
 
-        if (market == 0):
+        if (market == consts.MARKET_WETH):
             return self._send_eth_transaction(
                 self.payable_proxy.functions.operate(
                     accounts,
                     operations,
                     otherAddress
                 ),
-                options=dict(
-                    value=wei
-                )
+                options=txOptions
             )
         else:
             return self._send_eth_transaction(
@@ -175,9 +184,7 @@ class Client(object):
                     accounts,
                     operations
                 ),
-                options=dict(
-                    value=0
-                )
+                options=txOptions
             )
 
     def _get_token_contract(
