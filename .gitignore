@@ -32,3 +32,6 @@ var/
 # Unit test / coverage reports
 htmlcov/
 .tox/
+
+# Local testing
+test_local.py

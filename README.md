@@ -520,46 +520,83 @@ canceled_order = {
 ```python
 # deposit 10 ETH
 # does not require set_allowance
-tx_hash = client.deposit(
+tx_hash = client.eth.deposit(
   market=consts.MARKET_WETH,
   wei=utils.token_to_wei(10, consts.MARKET_WETH)
 )
-receipt = client.get_receipt(tx_hash)
+receipt = client.eth.get_receipt(tx_hash)
 
 
 # deposit 100 DAI
-tx_hash = client.set_allowance(market=consts.MARKET_DAI) # must only be called once, ever
-receipt = client.get_receipt(tx_hash)
+tx_hash = client.eth.set_allowance(market=consts.MARKET_DAI) # must only be called once, ever
+receipt = client.eth.get_receipt(tx_hash)
 
-tx_hash = client.deposit(
+tx_hash = client.eth.deposit(
   market=consts.MARKET_DAI,
   wei=utils.token_to_wei(100, consts.MARKET_DAI)
 )
-receipt = client.get_receipt(tx_hash)
+receipt = client.eth.get_receipt(tx_hash)
 
 
 # deposit 100 USDC
-tx_hash = client.set_allowance(market=consts.MARKET_USDC) # must only be called once, ever
-receipt = client.get_receipt(tx_hash)
+tx_hash = client.eth.set_allowance(market=consts.MARKET_USDC) # must only be called once, ever
+receipt = client.eth.get_receipt(tx_hash)
 
-tx_hash = client.deposit(
+tx_hash = client.eth.deposit(
   market=consts.MARKET_USDC,
   wei=utils.token_to_wei(100, consts.MARKET_USDC)
 )
-receipt = client.get_receipt(tx_hash)
+receipt = client.eth.get_receipt(tx_hash)
 
 
 # withdraw 50 USDC
-tx_hash = client.withdraw(
+tx_hash = client.eth.withdraw(
   market=consts.MARKET_USDC,
   wei=utils.token_to_wei(50, consts.MARKET_USDC)
 )
-receipt = client.get_receipt(tx_hash)
+receipt = client.eth.get_receipt(tx_hash)
 
 
 # withdraw all DAI (including interest)
-tx_hash = client.withdraw_to_zero(market=consts.MARKET_DAI)
-receipt = client.get_receipt(tx_hash)
+tx_hash = client.eth.withdraw_to_zero(market=consts.MARKET_DAI)
+receipt = client.eth.get_receipt(tx_hash)
+```
+
+### Ethereum Getters
+
+Getting information directly from the blockchain by querying a node
+
+```python
+# get the USD value of one atomic unit of DAI
+dai_price = client.eth.get_oracle_price(consts.MARKET_DAI)
+
+# get dYdX balances
+balances = client.eth.get_my_balances()
+'''
+balances = [
+  -91971743707894,
+  3741715702031854553560,
+  2613206278
+]
+'''
+
+# get Wallet balances
+balance = client.eth.get_my_wallet_balance(consts.MARKET_DAI)
+'''
+balance = 1000000000000000000
+'''
+
+# get dYdX account collateralization
+collateralization = client.eth.get_my_collateralization()
+'''
+collateralization = 2.5 or float('inf')
+'''
+
+# collateralization must remain above the minimum to prevent liquidation
+assert(collateralization > consts.MINIMUM_COLLATERALIZATION)
+'''
+consts.MINIMUM_COLLATERALIZATION = 1.15
+'''
 ```
 
 ## Testing

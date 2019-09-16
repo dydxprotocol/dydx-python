@@ -16,7 +16,7 @@ REQUIREMENTS = [
 
 setup(
     name='dydx-python',
-    version='0.3.2',
+    version='0.3.3',
     packages=find_packages(),
     package_data={
         'dydx': ['abi/*.json'],
