@@ -200,6 +200,25 @@ class TestEth():
         balance = client.eth.get_my_wallet_balance(consts.MARKET_ETH)
         assert balance > 0
 
+    # ------------ get_wallet_balance ------------
+
+    def test_get_wallet_balance(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        with pytest.raises(web3.exceptions.BadFunctionCallOutput) as error:
+            client.eth.get_wallet_balance(
+                address=ADDRESS_2,
+                market=consts.MARKET_DAI
+            )
+        assert CONTRACT_NOT_FOUND_ERROR in str(error.value)
+
+    def test_get_wallet_balance_eth(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        balance = client.eth.get_wallet_balance(
+            address=ADDRESS_2,
+            market=consts.MARKET_ETH
+        )
+        assert balance > 0
+
     # ------------ get_my_collateralization ------------
 
     def test_get_my_collateralization(self):

@@ -327,8 +327,28 @@ class Eth(object):
         market
     ):
         '''
-        Gets the on-chain balance of the users wallet (not dYdX balance)
-        for some asset.
+        Gets the on-chain balance of the users wallet for some asset.
+
+        :param market: required
+        :type market: number
+
+        :returns: number
+        '''
+        return self.get_wallet_balance(
+            address=self.public_address,
+            market=market
+        )
+
+    def get_wallet_balance(
+        self,
+        address,
+        market
+    ):
+        '''
+        Gets the on-chain balance of a users wallet for some asset.
+
+        :param address: required
+        :type address: str (address)
 
         :param market: required
         :type market: number
@@ -336,12 +356,10 @@ class Eth(object):
         :returns: number
         '''
         if market == consts.MARKET_ETH:
-            balance = self.web3.eth.getBalance(self.public_address)
+            balance = self.web3.eth.getBalance(address)
         else:
             contract = self._get_token_contract(market)
-            balance = contract.functions.balanceOf(
-                self.public_address,
-            ).call()
+            balance = contract.functions.balanceOf(address).call()
         return balance
 
     def get_my_collateralization(
