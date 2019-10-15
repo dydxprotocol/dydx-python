@@ -17,6 +17,7 @@ class Eth(object):
         self.private_key = private_key
         self.public_address = public_address
         self.account_number = account_number
+        self.min_nonce = self.web3.eth.getTransactionCount(self.public_address)
 
         # initialize contracts
         self.solo_margin = self._create_contract(
@@ -54,8 +55,10 @@ class Eth(object):
         if 'from' not in options:
             options['from'] = self.public_address
         if 'nonce' not in options:
-            options['nonce'] = \
+            options['nonce'] = max(
+                self.min_nonce,
                 self.web3.eth.getTransactionCount(self.public_address)
+            )
         if 'gasPrice' not in options:
             try:
                 options['gasPrice'] = \
@@ -72,6 +75,7 @@ class Eth(object):
                 )
             except Exception:
                 options['gas'] = consts.DEFAULT_GAS_AMOUNT
+        self.min_nonce = max(self.min_nonce, options['nonce'] + 1)
         tx = method.buildTransaction(options)
         stx = self.web3.eth.account.sign_transaction(tx, self.private_key)
         return self.web3.eth.sendRawTransaction(stx.rawTransaction).hex()
