@@ -412,3 +412,18 @@ class Client(object):
             'dex/orders/' + hash,
             headers={'Authorization': 'Bearer ' + signature}
         )
+
+    def get_orderbook(
+        self,
+        market
+    ):
+        '''
+        Get the active orderbook for a market
+
+        :param market: required, name of market (e.g. WETH-DAI)
+
+        :returns: { asks: OrderOnOrderbook[], bids: OrderOnOrderbook[] }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('dex/orders/' + market)
