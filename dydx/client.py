@@ -420,7 +420,7 @@ class Client(object):
         '''
         Get the active orderbook for a market
 
-        :param market: required, name of market (e.g. WETH-DAI, WETH-USDC, DAI-USDC)
+        :param market: required, name of market (e.g. WETH-DAI)
 
         :returns: { asks: OrderOnOrderbook[], bids: OrderOnOrderbook[] }
 
