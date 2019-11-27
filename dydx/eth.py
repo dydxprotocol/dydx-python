@@ -32,12 +32,16 @@ class Eth(object):
             consts.WETH_ADDRESS,
             'abi/erc20.json'
         )
-        self.dai_contract = self._create_contract(
-            consts.DAI_ADDRESS,
+        self.sai_contract = self._create_contract(
+            consts.SAI_ADDRESS,
             'abi/erc20.json'
         )
         self.usdc_contract = self._create_contract(
             consts.USDC_ADDRESS,
+            'abi/erc20.json'
+        )
+        self.dai_contract = self._create_contract(
+            consts.DAI_ADDRESS,
             'abi/erc20.json'
         )
 
@@ -160,10 +164,12 @@ class Eth(object):
     ):
         if market == consts.MARKET_WETH:
             return self.weth_contract
-        elif market == consts.MARKET_DAI:
-            return self.dai_contract
+        elif market == consts.MARKET_SAI:
+            return self.sai_contract
         elif market == consts.MARKET_USDC:
             return self.usdc_contract
+        elif market == consts.MARKET_DAI:
+            return self.dai_contract
         else:
             raise ValueError('Invalid market number')
 

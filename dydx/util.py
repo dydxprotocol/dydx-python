@@ -190,9 +190,11 @@ def token_to_wei(amount, market):
     if market == 0:
         decimals = consts.DECIMALS_WETH
     elif market == 1:
-        decimals = consts.DECIMALS_DAI
+        decimals = consts.DECIMALS_SAI
     elif market == 2:
         decimals = consts.DECIMALS_USDC
+    elif market == 3:
+        decimals = consts.DECIMALS_DAI
     else:
         raise ValueError('Invalid market number')
     return int(amount * (10 ** decimals))
