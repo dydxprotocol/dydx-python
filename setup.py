@@ -6,10 +6,8 @@ REQUIREMENTS = [
     'requests==2.22.0',
     'requests-mock==1.6.0',
     'six==1.12',
-    'web3==5.0.0',
+    'web3>=5.0.0',
     'eth-account==0.4.0',
-    'pytest>=4.4.0,<5.0.0',
-    'tox==3.13.2',
     'eth_keys'
 ]
 
