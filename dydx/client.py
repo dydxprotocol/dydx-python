@@ -340,6 +340,7 @@ class Client(object):
         takerMarket,
         makerAmount,
         takerAmount,
+        triggerPrice=None,
         expiration=None,
         fillOrKill=False,
         clientId=None,
@@ -358,6 +359,9 @@ class Client(object):
 
         :param takerAmount: required
         :type takerAmount: number
+
+        :param triggerPrice: optional, defaults to null
+        :type triggerPrice: number
 
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
@@ -386,6 +390,8 @@ class Client(object):
             'salt': random.randint(0, 2**256)
         }
         order['typedSignature'] = utils.sign_order(order, self.private_key)
+        if triggerPrice:
+            order['triggerPrice'] = triggerPrice
 
         return self._post('dex/orders', data=json.dumps(utils.remove_nones({
             'fillOrKill': fillOrKill,
