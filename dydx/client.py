@@ -342,6 +342,7 @@ class Client(object):
         takerAmount,
         expiration=None,
         fillOrKill=False,
+        postOnly=False,
         clientId=None,
     ):
         '''
@@ -363,6 +364,9 @@ class Client(object):
         :type expiration: number
 
         :param fillOrKill: optional, defaults to False
+        :type fillOrKill: bool
+
+        :param postOnly: optional, defaults to False
         :type fillOrKill: bool
 
         :param clientId: optional, defaults to None
@@ -389,6 +393,7 @@ class Client(object):
 
         return self._post('dex/orders', data=json.dumps(utils.remove_nones({
             'fillOrKill': fillOrKill,
+            'postOnly': postOnly,
             'clientId': clientId,
             'order': {k: str(v) for k, v in order.items()}
         })))
