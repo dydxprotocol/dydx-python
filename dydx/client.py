@@ -61,16 +61,13 @@ class Client(object):
     def _delete(self, *args, **kwargs):
         return self._request('delete', *args, **kwargs)
 
-    def _replace(self, *args, **kwargs):
-        return self._request(self, *args, **kwargs)
-
     def _make_order(
         self,
         makerMarket,
         takerMarket,
         makerAmount,
         takerAmount,
-        expiration,
+        expiration=None,
     ):
         '''
         Make an order object
@@ -86,6 +83,9 @@ class Client(object):
 
         :param takerAmount: required
         :type takerAmount: number
+
+        :param expiration: optional, defaults to 28 days from now
+        :type expiration: number
 
         :returns: Order
 
@@ -467,6 +467,7 @@ class Client(object):
         cancelId,
         expiration=None,
         fillOrKill=False,
+        postOnly=False,
         clientId=None,
     ):
         '''
@@ -493,6 +494,9 @@ class Client(object):
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
+        :param postOnly: optional, defaults to False
+        :type postOnly: bool
+
         :param clientId: optional, defaults to None
         :type clientId: string
 
@@ -517,6 +521,7 @@ class Client(object):
                 'cancelId': cancelId,
                 'cancelSignature': cancelSignature,
                 'fillOrKill': fillOrKill,
+                'postOnly': postOnly,
                 'clientId': clientId,
                 'order': {k: str(v) for k, v in order.items()},
             })),
