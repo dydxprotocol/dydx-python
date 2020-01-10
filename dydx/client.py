@@ -367,7 +367,7 @@ class Client(object):
         :type fillOrKill: bool
 
         :param postOnly: optional, defaults to False
-        :type fillOrKill: bool
+        :type postOnly: bool
 
         :param clientId: optional, defaults to None
         :type clientId: string
