@@ -389,6 +389,7 @@ class TestClient():
         def additional_matcher(request):
             body = json.loads(request.body)
             assert body['fillOrKill'] is False
+            assert body['postOnly'] is False
             assert body['order']['takerMarket'] == '0'
             assert body['order']['makerMarket'] == '1'
             assert body['order']['takerAmount'] == '1000'
