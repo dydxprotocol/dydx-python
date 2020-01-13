@@ -321,10 +321,10 @@ class Client(object):
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
 
-        :param accountOwner: optional, defaults to self.public_address
+        :param accountOwner: optional
         :type accountOwner: str (address)
 
-        :param accountNumber: optional, defaults to self.account_number
+        :param accountNumber: optional
         :type accountNumber: number
 
         :param transactionHash: optional
