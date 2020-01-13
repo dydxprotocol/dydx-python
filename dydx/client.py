@@ -5,8 +5,8 @@ import dydx.util as utils
 from dydx.eth import Eth
 from .exceptions import DydxAPIError
 
-class Client(object):
 
+class Client(object):
     TAKER_ACCOUNT_OWNER = '0xf809e07870dca762B9536d61A4fBEF1a17178092'
     TAKER_ACCOUNT_NUMBER = 0
     BASE_API_URI = 'https://api.dydx.exchange'
@@ -169,7 +169,8 @@ class Client(object):
         Return open orders for the loaded account
 
         :param market: optional
-        :type market: str[] of valid markets ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+        :type market: str[] of valid markets
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -204,16 +205,26 @@ class Client(object):
         Returns all open orders
 
         :param market: optional
-        :type market: str[] of valid markets ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+        :type market: str[] of valid markets
+            ["WETH-DAI",
+             "DAI-USDC",
+             "WETH-USDC"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
 
         :param status: optional
-        :type status: str[] of valid statuses ["PENDING", "OPEN", "FILLED", "PARTIALLY_FILLED", "CANCELED", "UNTRIGGERED"]
+        :type status: str[] of valid statuses
+            ["PENDING",
+             "OPEN",
+             "FILLED",
+             "PARTIALLY_FILLED",
+             "CANCELED",
+             "UNTRIGGERED"]
 
         :param orderType: optional
-        :type orderType: str[] of valid order types ["LIMIT", "ISOLATED_MARKET", "STOP_LIMIT"]
+        :type orderType: str[] of valid order types
+          ["LIMIT", "ISOLATED_MARKET", "STOP_LIMIT"]
 
         :param accountOwner: optional, defaults to self.public_address
         :type accountOwner: str (address)
@@ -268,7 +279,8 @@ class Client(object):
         Return historical fills for the loaded account
 
         :param market: optional
-        :type market: str[] of valid markets ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+        :type market: str[] of valid markets
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -303,7 +315,8 @@ class Client(object):
         Returns all historical fills
 
         :param market: optional
-        :type market: str[] of valid markets ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+        :type market: str[] of valid markets
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -351,7 +364,8 @@ class Client(object):
         Returns all historical trades
 
         :param market: optional
-        :type market: str[] of valid markets ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+        :type market: str[] of valid markets
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -466,12 +480,14 @@ class Client(object):
             expiration,
         )
 
-        return self._post('/v1/dex/orders', data=json.dumps(utils.remove_nones({
-            'fillOrKill': fillOrKill,
-            'postOnly': postOnly,
-            'clientId': clientId,
-            'order': {k: str(v) for k, v in order.items()}
-        })))
+        return self._post('/v1/dex/orders', data=json.dumps(
+            utils.remove_nones({
+                'fillOrKill': fillOrKill,
+                'postOnly': postOnly,
+                'clientId': clientId,
+                'order': {k: str(v) for k, v in order.items()}
+            })
+        ))
 
     def cancel_order(
         self,
