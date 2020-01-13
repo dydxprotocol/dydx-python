@@ -226,10 +226,10 @@ class Client(object):
         :type orderType: str[] of valid order types
           ["LIMIT", "ISOLATED_MARKET", "STOP_LIMIT"]
 
-        :param accountOwner: optional, defaults to self.public_address
+        :param accountOwner: optional
         :type accountOwner: str (address)
 
-        :param accountNumber: optional, defaults to self.account_number
+        :param accountNumber: optional
         :type accountNumber: number
 
         :param limit: optional, defaults to 100
@@ -370,10 +370,10 @@ class Client(object):
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
 
-        :param accountOwner: optional, defaults to self.public_address
+        :param accountOwner: optional
         :type accountOwner: str (address)
 
-        :param accountNumber: optional, defaults to self.account_number
+        :param accountNumber: optional
         :type accountNumber: number
 
         :param transactionHash: optional
