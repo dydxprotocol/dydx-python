@@ -409,52 +409,6 @@ class TestClient():
             )
             assert result == json_obj
 
-  # ------------ create_order ------------
-
-    def test_create_order_success(self):
-        client = Client(PRIVATE_KEY_1)
-        with requests_mock.mock() as rm:
-            json_obj = tests.test_json.mock_create_order_json
-            rm.post(
-                'https://api.dydx.exchange/v1/dex/orders',
-                additional_matcher=_create_additional_matcher(client),
-                json=json_obj
-            )
-            result = client.create_order(
-                makerMarket=1,
-                takerMarket=0,
-                makerAmount=2000,
-                takerAmount=1000
-            )
-            assert result == json_obj
-
-    # ------------ cancel_order ------------
-
-    def test_cancel_order_no_hash_error(self):
-        client = Client(PRIVATE_KEY_1)
-        with pytest.raises(TypeError) as error:
-            client.cancel_order()
-        assert 'required positional argument: \'hash\'' in str(error.value)
-
-    def test_cancel_order_success(self):
-
-        def additional_matcher(request):
-            return 'Bearer ' + CANCEL_ORDER_SIGNATURE == \
-                request.headers['Authorization']
-
-        client = Client(PRIVATE_KEY_1)
-        with requests_mock.mock() as rm:
-            json_obj = tests.test_json.mock_cancel_order_json
-            rm.delete(
-                'https://api.dydx.exchange/v1/dex/orders/' + ORDER_HASH,
-                additional_matcher=additional_matcher,
-                json=json_obj
-            )
-            result = client.cancel_order(
-                hash=ORDER_HASH
-            )
-            assert result == json_obj
-
     # ------------ replace_order ------------
 
     def test_replace_order_success(self):
