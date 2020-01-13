@@ -114,67 +114,67 @@ class TestClient():
 
     # ------------ get_pairs ------------
 
-    # def test_get_pairs_success(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         json_obj = tests.test_json.mock_get_pairs_json
-    #         rm.get('https://api.dydx.exchange/v1/dex/pairs', json=json_obj)
-    #         result = client.get_pairs()
-    #         assert result == json_obj
+    def test_get_pairs_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_pairs_json
+            rm.get('https://api.dydx.exchange/v1/dex/pairs', json=json_obj)
+            result = client.get_pairs()
+            assert result == json_obj
 
-    # def test_get_pairs_fail(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         rm.get('https://api.dydx.exchange/v1/dex/pairs', status_code=400)
-    #         with pytest.raises(Exception) as error:
-    #             client.get_pairs()
-    #         assert '400' in str(error.value)
+    def test_get_pairs_fail(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            rm.get('https://api.dydx.exchange/v1/dex/pairs', status_code=400)
+            with pytest.raises(Exception) as error:
+                client.get_pairs()
+            assert '400' in str(error.value)
 
-    # # ------------ get_my_balances ------------
+    # ------------ get_my_balances ------------
 
-    # def test_get_my_balances_success(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         json_obj = tests.test_json.mock_get_balances_json
-    #         uri = 'https://api.dydx.exchange/v1/accounts/' \
-    #             + client.public_address \
-    #             + '?number=' + str(client.account_number)
-    #         rm.get(uri, json=json_obj)
-    #         result = client.get_my_balances()
-    #         assert result == json_obj
+    def test_get_my_balances_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_balances_json
+            uri = 'https://api.dydx.exchange/v1/accounts/' \
+                + client.public_address \
+                + '?number=' + str(client.account_number)
+            rm.get(uri, json=json_obj)
+            result = client.get_my_balances()
+            assert result == json_obj
 
-    # # ------------ get_balances ------------
+    # ------------ get_balances ------------
 
-    # def test_get_balances_no_address_error(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with pytest.raises(TypeError) as error:
-    #         client.get_balances()
-    #     assert 'required positional argument: \'address\'' in str(error.value)
+    def test_get_balances_no_address_error(self):
+        client = Client(PRIVATE_KEY_1)
+        with pytest.raises(TypeError) as error:
+            client.get_balances()
+        assert 'required positional argument: \'address\'' in str(error.value)
 
-    # def test_get_balances_address_success(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         json_obj = tests.test_json.mock_get_balances_json
-    #         uri = 'https://api.dydx.exchange/v1/accounts/' + ADDRESS_2
-    #         rm.get(uri, json=json_obj)
-    #         result = client.get_balances(
-    #             address=ADDRESS_2
-    #         )
-    #         assert result == json_obj
+    def test_get_balances_address_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_balances_json
+            uri = 'https://api.dydx.exchange/v1/accounts/' + ADDRESS_2
+            rm.get(uri, json=json_obj)
+            result = client.get_balances(
+                address=ADDRESS_2
+            )
+            assert result == json_obj
 
-    # def test_get_balances_address_and_number_success(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         json_obj = tests.test_json.mock_get_balances_json
-    #         uri = 'https://api.dydx.exchange/v1/accounts/' \
-    #             + ADDRESS_2 \
-    #             + '?number=' + str(1234)
-    #         rm.get(uri, json=json_obj)
-    #         result = client.get_balances(
-    #             address=ADDRESS_2,
-    #             number=1234
-    #         )
-    #         assert result == json_obj
+    def test_get_balances_address_and_number_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_balances_json
+            uri = 'https://api.dydx.exchange/v1/accounts/' \
+                + ADDRESS_2 \
+                + '?number=' + str(1234)
+            rm.get(uri, json=json_obj)
+            result = client.get_balances(
+                address=ADDRESS_2,
+                number=1234
+            )
+            assert result == json_obj
 
     # # ------------ get_my_orders ------------
 
@@ -409,7 +409,6 @@ class TestClient():
             )
             assert result == json_obj
 
-<<<<<<< HEAD
     # ------------ create_order ------------
 
     def test_create_order_success(self):
@@ -478,86 +477,84 @@ class TestClient():
                 cancelId=ORDER_HASH
             )
             assert result == json_obj
-=======
     # # ------------ create_order ------------
 
-    # def test_create_order_success(self):
+    def test_create_order_success(self):
 
-    #     def additional_matcher(request):
-    #         body = json.loads(request.body)
-    #         assert body['fillOrKill'] is False
-    #         assert body['order']['takerMarket'] == '0'
-    #         assert body['order']['makerMarket'] == '1'
-    #         assert body['order']['takerAmount'] == '1000'
-    #         assert body['order']['makerAmount'] == '2000'
-    #         assert body['order']['makerAccountOwner'] == \
-    #             client.public_address
-    #         assert body['order']['makerAccountNumber'] == \
-    #             str(client.account_number)
-    #         assert body['order']['takerAccountOwner'] == \
-    #             client.TAKER_ACCOUNT_OWNER
-    #         assert body['order']['takerAccountNumber'] == \
-    #             str(client.TAKER_ACCOUNT_NUMBER)
-    #         assert abs(
-    #             int(body['order']['expiration']) -
-    #             utils.epoch_in_four_weeks()) <= 10
-    #         assert body['order']['salt'].isnumeric()
-    #         sent_order = body['order']
-    #         expected_signature = utils.sign_order({
-    #             'makerMarket': int(sent_order['makerMarket']),
-    #             'takerMarket': int(sent_order['takerMarket']),
-    #             'makerAmount': int(sent_order['makerAmount']),
-    #             'takerAmount': int(sent_order['takerAmount']),
-    #             'makerAccountOwner': sent_order['makerAccountOwner'],
-    #             'makerAccountNumber': int(sent_order['makerAccountNumber']),
-    #             'takerAccountOwner': sent_order['takerAccountOwner'],
-    #             'takerAccountNumber': int(sent_order['takerAccountNumber']),
-    #             'expiration': int(sent_order['expiration']),
-    #             'salt': int(sent_order['salt']),
-    #         }, client.private_key)
-    #         assert body['order']['typedSignature'] == expected_signature
-    #         return True
+        def additional_matcher(request):
+            body = json.loads(request.body)
+            assert body['fillOrKill'] is False
+            assert body['order']['takerMarket'] == '0'
+            assert body['order']['makerMarket'] == '1'
+            assert body['order']['takerAmount'] == '1000'
+            assert body['order']['makerAmount'] == '2000'
+            assert body['order']['makerAccountOwner'] == \
+                client.public_address
+            assert body['order']['makerAccountNumber'] == \
+                str(client.account_number)
+            assert body['order']['takerAccountOwner'] == \
+                client.TAKER_ACCOUNT_OWNER
+            assert body['order']['takerAccountNumber'] == \
+                str(client.TAKER_ACCOUNT_NUMBER)
+            assert abs(
+                int(body['order']['expiration']) -
+                utils.epoch_in_four_weeks()) <= 10
+            assert body['order']['salt'].isnumeric()
+            sent_order = body['order']
+            expected_signature = utils.sign_order({
+                'makerMarket': int(sent_order['makerMarket']),
+                'takerMarket': int(sent_order['takerMarket']),
+                'makerAmount': int(sent_order['makerAmount']),
+                'takerAmount': int(sent_order['takerAmount']),
+                'makerAccountOwner': sent_order['makerAccountOwner'],
+                'makerAccountNumber': int(sent_order['makerAccountNumber']),
+                'takerAccountOwner': sent_order['takerAccountOwner'],
+                'takerAccountNumber': int(sent_order['takerAccountNumber']),
+                'expiration': int(sent_order['expiration']),
+                'salt': int(sent_order['salt']),
+            }, client.private_key)
+            assert body['order']['typedSignature'] == expected_signature
+            return True
 
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         json_obj = tests.test_json.mock_create_order_json
-    #         rm.post(
-    #             'https://api.dydx.exchange/v1/dex/orders',
-    #             additional_matcher=additional_matcher,
-    #             json=json_obj
-    #         )
-    #         result = client.create_order(
-    #             makerMarket=1,
-    #             takerMarket=0,
-    #             makerAmount=2000,
-    #             takerAmount=1000
-    #         )
-    #         assert result == json_obj
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_create_order_json
+            rm.post(
+                'https://api.dydx.exchange/v1/dex/orders',
+                additional_matcher=additional_matcher,
+                json=json_obj
+            )
+            result = client.create_order(
+                makerMarket=1,
+                takerMarket=0,
+                makerAmount=2000,
+                takerAmount=1000
+            )
+            assert result == json_obj
 
-    # # ------------ cancel_order ------------
+    # ------------ cancel_order ------------
 
-    # def test_cancel_order_no_hash_error(self):
-    #     client = Client(PRIVATE_KEY_1)
-    #     with pytest.raises(TypeError) as error:
-    #         client.cancel_order()
-    #     assert 'required positional argument: \'hash\'' in str(error.value)
+    def test_cancel_order_no_hash_error(self):
+        client = Client(PRIVATE_KEY_1)
+        with pytest.raises(TypeError) as error:
+            client.cancel_order()
+        assert 'required positional argument: \'hash\'' in str(error.value)
 
-    # def test_cancel_order_success(self):
+    def test_cancel_order_success(self):
 
-    #     def additional_matcher(request):
-    #         return 'Bearer ' + CANCEL_ORDER_SIGNATURE == \
-    #             request.headers['Authorization']
+        def additional_matcher(request):
+            return 'Bearer ' + CANCEL_ORDER_SIGNATURE == \
+                request.headers['Authorization']
 
-    #     client = Client(PRIVATE_KEY_1)
-    #     with requests_mock.mock() as rm:
-    #         json_obj = tests.test_json.mock_cancel_order_json
-    #         rm.delete(
-    #             'https://api.dydx.exchange/v1/dex/orders/' + ORDER_HASH,
-    #             additional_matcher=additional_matcher,
-    #             json=json_obj
-    #         )
-    #         result = client.cancel_order(
-    #             hash=ORDER_HASH
-    #         )
-    #         assert result == json_obj
->>>>>>> added v2 endpoints to client
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_cancel_order_json
+            rm.delete(
+                'https://api.dydx.exchange/v1/dex/orders/' + ORDER_HASH,
+                additional_matcher=additional_matcher,
+                json=json_obj
+            )
+            result = client.cancel_order(
+                hash=ORDER_HASH
+            )
+            assert result == json_obj

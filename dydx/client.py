@@ -551,7 +551,7 @@ class Client(object):
         cancelSignature = utils.sign_cancel_order(cancelId, self.private_key)
 
         return self._post(
-            'dex/orders/replace',
+            '/v1/dex/orders/replace',
             data=json.dumps(utils.remove_nones({
                 'cancelId': cancelId,
                 'cancelSignature': cancelSignature,
