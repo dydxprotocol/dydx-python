@@ -184,6 +184,20 @@ class TestClient():
             client.get_my_orders()
         assert 'required positional argument: \'market\'' in str(error.value)
 
+    def test_get_orders_no_market_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_orders_json
+            uri = 'https://api.dydx.exchange/v2/orders' \
+                + '?accountOwner=' + client.public_address \
+                + '&accountNumber=' + str(client.account_number) \
+            rm.get(uri, json=json_obj)
+            result = client.get_orders(
+                accountOwner=client.public_address,
+                accountNumber=client.account_number,
+            )
+            assert result == json_obj
+
     def test_get_my_orders_default_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
