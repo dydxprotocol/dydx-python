@@ -412,29 +412,6 @@ class TestClient():
             )
             assert result == json_obj
 
-    # ------------ replace_order ------------
-
-    def test_replace_order_success(self):
-        client = Client(PRIVATE_KEY_1)
-        with requests_mock.mock() as rm:
-            json_obj = tests.test_json.mock_create_order_json
-            rm.post(
-                'https://api.dydx.exchange/v1/dex/orders/replace',
-                additional_matcher=_create_additional_matcher(
-                    client,
-                    cancelId=ORDER_HASH
-                ),
-                json=json_obj
-            )
-            result = client.replace_order(
-                makerMarket=1,
-                takerMarket=0,
-                makerAmount=2000,
-                takerAmount=1000,
-                cancelId=ORDER_HASH
-            )
-            assert result == json_obj
-
     # ------------ create_order ------------
 
     def test_create_order_success(self):
@@ -478,5 +455,28 @@ class TestClient():
             )
             result = client.cancel_order(
                 hash=ORDER_HASH
+            )
+            assert result == json_obj
+
+    # ------------ replace_order ------------
+
+    def test_replace_order_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_create_order_json
+            rm.post(
+                'https://api.dydx.exchange/v1/dex/orders/replace',
+                additional_matcher=_create_additional_matcher(
+                    client,
+                    cancelId=ORDER_HASH
+                ),
+                json=json_obj
+            )
+            result = client.replace_order(
+                makerMarket=1,
+                takerMarket=0,
+                makerAmount=2000,
+                takerAmount=1000,
+                cancelId=ORDER_HASH
             )
             assert result == json_obj
