@@ -190,7 +190,7 @@ class TestClient():
             json_obj = tests.test_json.mock_get_orders_json
             uri = 'https://api.dydx.exchange/v2/orders' \
                 + '?accountOwner=' + client.public_address \
-                + '&accountNumber=' + str(client.account_number) \
+                + '&accountNumber=' + str(client.account_number)
             rm.get(uri, json=json_obj)
             result = client.get_orders(
                 accountOwner=client.public_address,
