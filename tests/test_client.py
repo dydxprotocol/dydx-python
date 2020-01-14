@@ -219,6 +219,7 @@ class TestClient():
             assert result == json_obj
 
     # ------------ get_orders ------------
+
     def test_get_orders_default_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
@@ -306,6 +307,7 @@ class TestClient():
             assert result == json_obj
 
     # ------------ get_fills ------------
+
     def test_get_fills_default_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
@@ -379,6 +381,7 @@ class TestClient():
             assert result == json_obj
 
     # ------------ get_trades ------------
+
     def test_get_trades_default_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
@@ -431,7 +434,8 @@ class TestClient():
                 cancelId=ORDER_HASH
             )
             assert result == json_obj
-    # # ------------ create_order ------------
+
+    # ------------ create_order ------------
 
     def test_create_order_success(self):
         client = Client(PRIVATE_KEY_1)
@@ -439,7 +443,7 @@ class TestClient():
             json_obj = tests.test_json.mock_create_order_json
             rm.post(
                 'https://api.dydx.exchange/v1/dex/orders',
-                additional_matcher=_create_additional_matcher,
+                additional_matcher=_create_additional_matcher(client),
                 json=json_obj
             )
             result = client.create_order(
