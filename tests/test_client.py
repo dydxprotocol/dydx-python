@@ -426,6 +426,20 @@ class TestClient():
             )
             assert result == json_obj
 
+    # ------------ get_orderbook ------------
+
+    def test_get_orderbook_success(self):
+        client = Client(PRIVATE_KEY_1)
+        market = MARKETS[0]
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_orders_json
+            uri = 'https://api.dydx.exchange/v1/orderbook/' + market
+            rm.get(uri, json=json_obj)
+            result = client.get_orderbook(
+                market=market,
+            )
+            assert result == json_obj
+
     # ------------ create_order ------------
 
     def test_create_order_success(self):
