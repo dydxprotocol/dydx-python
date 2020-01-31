@@ -360,7 +360,7 @@ class Client(object):
         :param takerAmount: required
         :type takerAmount: number
 
-        :param triggerPrice: optional, defaults to null
+        :param triggerPrice: optional, defaults to None
         :type triggerPrice: number
 
         :param expiration: optional, defaults to 28 days from now
@@ -387,11 +387,10 @@ class Client(object):
             'takerAccountOwner': self.TAKER_ACCOUNT_OWNER,
             'takerAccountNumber': self.TAKER_ACCOUNT_NUMBER,
             'expiration': expiration or utils.epoch_in_four_weeks(),
-            'salt': random.randint(0, 2**256)
+            'salt': random.randint(0, 2**256),
+            'triggerPrice': triggerPrice,
         }
         order['typedSignature'] = utils.sign_order(order, self.private_key)
-        if triggerPrice:
-            order['triggerPrice'] = triggerPrice
 
         return self._post('dex/orders', data=json.dumps(utils.remove_nones({
             'fillOrKill': fillOrKill,
