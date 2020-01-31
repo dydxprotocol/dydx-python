@@ -171,6 +171,7 @@ orders = {
             "status": "OPEN",
             "price": "0.01",
             "fillOrKill": false,
+            "postOnly": false,
             "rawData": "...",
             "makerAmount": "10000000000000000000",
             "unfillableAt": null,
@@ -233,6 +234,7 @@ fills = {
                 "status": "OPEN",
                 "price": "191.5",
                 "fillOrKill": false,
+                "postOnly": false,
                 "rawData": "...",
                 "makerAmount": "120000000000000000",
                 "unfillableAt": "2019-08-19T23:53:19.627Z",
@@ -260,35 +262,36 @@ fills = {
 
 # Get one order by id
 order = client.get_order(
-	orderId,
+  orderId,
 )
 '''
 order = {
-	order = {
-		"uuid": "6c2d9196-8b18-4749-9c80-3a40135ce325",
-		"id": "0x1bd537b8ccfa22c4d37e33062a5d88996819720b4748be5bd621c38f34d59708",
-		"makerAccountOwner": "0x5f5a46a8471f60b1e9f2ed0b8fc21ba8b48887d8",
-		"makerAccountNumber": "0",
-		"status": "OPEN",
-		"price": "0.01",
-		"fillOrKill": false,
-		"rawData": "...",
-		"makerAmount": "10000000000000000000",
-		"unfillableAt": null,
-		"expiresAt": "2019-09-16T21:34:38.000Z",
-		"unfillableReason": null,
-		"takerAmount": "100000000000000000",
-		"makerAmountRemaining": "10000000000000000000",
-		"orderType": "dydexLimitV1",
-		"takerAmountRemaining": "100000000000000000",
-		"createdAt": "2019-08-19T21:34:41.626Z",
-		"pairUuid": "83b69358-a05e-4048-bc11-204da54a8b19",
-		"pair": {
-			"name": "DAI-WETH",
-			...
-		},
-		"fills": []
-	}
+  order = {
+    "uuid": "6c2d9196-8b18-4749-9c80-3a40135ce325",
+    "id": "0x1bd537b8ccfa22c4d37e33062a5d88996819720b4748be5bd621c38f34d59708",
+    "makerAccountOwner": "0x5f5a46a8471f60b1e9f2ed0b8fc21ba8b48887d8",
+    "makerAccountNumber": "0",
+    "status": "OPEN",
+    "price": "0.01",
+    "fillOrKill": false,
+    "postOnly": false,
+    "rawData": "...",
+    "makerAmount": "10000000000000000000",
+    "unfillableAt": null,
+    "expiresAt": "2019-09-16T21:34:38.000Z",
+    "unfillableReason": null,
+    "takerAmount": "100000000000000000",
+    "makerAmountRemaining": "10000000000000000000",
+    "orderType": "dydexLimitV1",
+    "takerAmountRemaining": "100000000000000000",
+    "createdAt": "2019-08-19T21:34:41.626Z",
+    "pairUuid": "83b69358-a05e-4048-bc11-204da54a8b19",
+    "pair": {
+      "name": "DAI-WETH",
+      ...
+    },
+    "fills": []
+  }
 }
 '''
 ```
@@ -335,6 +338,7 @@ trades = {
                 "status": "PARTIALLY_FILLED",
                 "price": "0.004962779156327543424317617866004962779156327543424317617866004962779156327543",
                 "fillOrKill": false,
+                "postOnly": false,
                 "rawData": "{\"makerMarket\":\"1\",\"takerMarket\":\"0\",\"makerAccountNumber\":\"0\",\"takerAccountNumber\":\"0\",\"makerAccountOwner\":\"0x5F5A46a8471F60b1E9F2eD0b8fc21Ba8b48887D8\",\"takerAccountOwner\":\"0xf809e07870dca762B9536d61A4fBEF1a17178092\",\"makerAmount\":\"2015000000000000000\",\"takerAmount\":\"10000000000000000\",\"salt\":\"98520959837884420232461297527105290253597439542504267862519345092558369505856\",\"expiration\":\"1569360848\",\"typedSignature\":\"0xf26210e77f8ed100c88ba7ab8c3a3132506805c0b7e14a2ba0fb7ea2b8edd659705525b2e98460e3c23ebda83975b668aab287d4c588196eb7e607bba87545a61b00\"}",
                 "makerAmount": "2015000000000000000",
                 "unfillableAt": null,
@@ -387,6 +391,7 @@ trades = {
                 "status": "FILLED",
                 "price": "200",
                 "fillOrKill": false,
+                "postOnly": false,
                 "rawData": "{\"makerMarket\":\"0\",\"takerMarket\":\"1\",\"makerAccountNumber\":\"0\",\"takerAccountNumber\":\"0\",\"makerAccountOwner\":\"0xa33d2b7ad08cb84784a4db70fe7429eb603774e2\",\"takerAccountOwner\":\"0xf809e07870dca762b9536d61a4fbef1a17178092\",\"makerAmount\":\"100\",\"takerAmount\":\"20000\",\"salt\":\"71396665083958089451142428285242792093549457850088753846410228331338822485995\",\"expiration\":\"0\",\"typedSignature\":\"0xfa843b61052d5ac28b7c47acdd0bcf568113eadead435f9f34b474a4fbeab8cd4c88ca7823ac0162c1081d081a50bcfe523dba2dff3b26f98d38c81aa9aad6e21c01\"}",
                 "makerAmount": "100",
                 "unfillableAt": "2019-08-27T21:34:12.640Z",
@@ -449,7 +454,9 @@ created_order = client.create_order(
     makerMarket=consts.MARKET_WETH,
     takerMarket=consts.MARKET_DAI,
     makerAmount=utils.token_to_wei(10, consts.MARKET_WETH),
-    takerAmount=utils.token_to_wei(2000, consts.MARKET_DAI)
+    takerAmount=utils.token_to_wei(2000, consts.MARKET_DAI),
+    fillOrKill=False,
+    postOnly=False
 )
 '''
 created_order = {
@@ -461,6 +468,7 @@ created_order = {
         "status": "PENDING",
         "price": "200",
         "fillOrKill": false,
+        "postOnly": false,
         "orderType": "dydexLimitV1",
         "makerAmount": "10000000000000000",
         "makerAmountRemaining": "10000000000000000",
@@ -497,6 +505,7 @@ canceled_order = {
         "status": "OPEN",
         "price": "200",
         "fillOrKill": false,
+        "postOnly": false,
         "orderType": "dydexLimitV1",
         "makerAmount": "10000000000000000",
         "makerAmountRemaining": "10000000000000000",
