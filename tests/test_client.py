@@ -41,6 +41,7 @@ def _create_additional_matcher(client, cancelId=None):
     def _additional_matcher(request):
         body = json.loads(request.body)
         assert not body['fillOrKill']
+        assert not body['cancelAmountOnRevert']
         assert not body['postOnly']
         assert body['order']['takerMarket'] == '0'
         assert body['order']['makerMarket'] == '1'

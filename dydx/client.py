@@ -437,6 +437,7 @@ class Client(object):
         takerAmount,
         expiration=None,
         fillOrKill=False,
+        cancelAmountOnRevert=False,
         postOnly=False,
         clientId=None,
     ):
@@ -461,6 +462,9 @@ class Client(object):
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
+        :param cancelAmountOnRevert: optional, defaults to False
+        :type cancelAmountOnRevert: bool
+
         :param postOnly: optional, defaults to False
         :type postOnly: bool
 
@@ -483,6 +487,7 @@ class Client(object):
         return self._post('/v1/dex/orders', data=json.dumps(
             utils.remove_nones({
                 'fillOrKill': fillOrKill,
+                'cancelAmountOnRevert': cancelAmountOnRevert,
                 'postOnly': postOnly,
                 'clientId': clientId,
                 'order': {k: str(v) for k, v in order.items()}
@@ -518,6 +523,7 @@ class Client(object):
         cancelId,
         expiration=None,
         fillOrKill=False,
+        cancelAmountOnRevert=False,
         postOnly=False,
         clientId=None,
     ):
@@ -545,6 +551,9 @@ class Client(object):
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
+        :param cancelAmountOnRevert: optional, defaults to False
+        :type cancelAmountOnRevert: bool
+
         :param postOnly: optional, defaults to False
         :type postOnly: bool
 
@@ -569,6 +578,7 @@ class Client(object):
             data=json.dumps(utils.remove_nones({
                 'cancelId': cancelId,
                 'fillOrKill': fillOrKill,
+                'cancelAmountOnRevert': cancelAmountOnRevert,
                 'postOnly': postOnly,
                 'clientId': clientId,
                 'order': {k: str(v) for k, v in order.items()},
