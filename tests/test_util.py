@@ -9,21 +9,22 @@ ADDRESS_2 = '0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0'
 ADDRESS_1_NO_PREFIX = ADDRESS_1[2:]
 ADDRESS_2_NO_PREFIX = ADDRESS_2[2:]
 ORDER = {
-    'makerMarket': 0,
-    'takerMarket': 1,
-    'makerAmount': 100,
-    'takerAmount': 200,
+    'isBuy': True,
+    'baseMarket': 0,
+    'quoteMarket': 3,
+    'amount': 10000,
+    'limitPrice': 250.01,
+    'triggerPrice': 0,
+    'limitFee':  0.0050,
     'makerAccountOwner': ADDRESS_1,
     'makerAccountNumber': 111,
-    'takerAccountOwner': ADDRESS_2,
-    'takerAccountNumber': 222,
     'expiration': 1234,
-    'salt': 4321
+    'salt': 0,
 }
-ORDER_HASH = '0x444df3e619ce1865bb0138e89b3e92c29b1e57a6b35c4708822923bc60985c3d'  # noqa: E501
-CANCEL_ORDER_HASH = '0x45170c4ba6a19e3c9e25a4f3b3d65b9f2d988ad80f7a270528c03a7c484e1774'  # noqa: E501
-ORDER_SIGNATURE = '0x94c3e787666fa8d2611ce4543ced732e0f4591958d8a12feded84746bcde457f1dab3fc66cafc5eda9c6e755f0f82f4049353cad165a5187d4ec66d365c9c2991b01'  # noqa: E501
-CANCEL_ORDER_SIGNATURE = '0x3d29b75f6aad6db4cc02259bcaa98f465a164392b1c4743d7d0f53b73f64f29f00b495dc132b9a63b4aa613c15909878be1274b575549a959d9586eb7b5e520a1b01'  # noqa: E501
+ORDER_HASH = '0x50538cce27ddd08a8a3732aaedb90b5ef55fd92a6819f5798edc043833776405'  # noqa: E501
+CANCEL_ORDER_HASH = '0xca25945c7cbc05dda130cff8f92acd555c464e22239e0864637aeec402e556c5'  # noqa: E501
+ORDER_SIGNATURE = '0x229e6e1926aadea40b933dd6b12c9f4daac3267df5ca31041c72a9f6f2a057fe6257a664cca749be666f4452b1aa3587f5bc844c6b4fe7c835da8a4cabf9fa461b01'  # noqa: E501
+CANCEL_ORDER_SIGNATURE = '0xe760368bbdb904809d2383606e27b9ab8ed57f47ce37dc67d4f87e59bb9102c46447f7ce20f1751cd7d670f2b7e4dec61da3288f242d3a003cc70b13a8560f7c1b01'  # noqa: E501
 
 
 class TestUtil():

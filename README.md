@@ -146,7 +146,7 @@ balances = {
 ```python
 # Get orders created by my account for both sides of the book
 my_orders = client.get_my_orders(
-    pairs=['WETH-DAI', 'DAI-WETH'],
+    market=['WETH-DAI', 'DAI-WETH'],
     limit=None,
     startingBefore=None
 )
@@ -154,7 +154,7 @@ my_orders = client.get_my_orders(
 # Get all orders for both sides of the book
 ten_days_ago = datetime.datetime.now() - datetime.timedelta(days=10)
 all_orders = client.get_orders(
-    pairs=['WETH-DAI', 'DAI-WETH'],
+    market=['WETH-DAI', 'DAI-WETH'],
     makerAccountOwner=None,  # optional
     makerAccountNumber=None,  # optional
     limit=2,  # optional
@@ -201,14 +201,14 @@ orders = {
 ```python
 # Get fills created by my account for both sides of the orderbook
 my_fills = client.get_my_fills(
-    pairs=['WETH-DAI', 'DAI-WETH'],
+    market=['WETH-DAI', 'DAI-WETH'],
     limit=None,  # optional
     startingBefore=None  # optional
 )
 
 # Get all fills from one side of the book
 all_fills = client.get_fills(
-    pairs=['WETH-DAI'], # 'DAI-WETH' side of the book is not included
+    market=['WETH-DAI'], # 'DAI-WETH' side of the book is not included
     makerAccountOwner='0x5F5A46a8471F60b1E9F2eD0b8fc21Ba8b48887D8',  # optional
     makerAccountNumber=0,  # optional
     limit=2,  # optional
@@ -304,14 +304,14 @@ order = {
 ```python
 # Get trades created by my account for both sides of the orderbook
 my_trades = client.get_my_trades(
-    pairs=['WETH-DAI', 'DAI-WETH'],
+    market=['WETH-DAI', 'DAI-WETH'],
     limit=None,  # optional
     startingBefore=None  # optional
 )
 
 # Get all trades from one side of the book
 all_trades = client.get_trades(
-    pairs=['WETH-DAI'], # 'DAI-WETH' side of the book is not included
+    market=['WETH-DAI'], # 'DAI-WETH' side of the book is not included
     makerAccountOwner='0x5F5A46a8471F60b1E9F2eD0b8fc21Ba8b48887D8',  # optional
     makerAccountNumber=0,  # optional
     limit=2,  # optional
@@ -455,7 +455,7 @@ trades = {
 
 ```python
 # Create order to SELL 10 ETH for 2000 DAI (a price of 200 DAI/ETH)
-created_order = client.create_order(
+created_order = client.place_order(
     makerMarket=consts.MARKET_WETH,
     takerMarket=consts.MARKET_DAI,
     makerAmount=utils.token_to_wei(10, consts.MARKET_WETH),

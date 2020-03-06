@@ -62,26 +62,26 @@ class Client(object):
 
     def _make_order(
         self,
-        makerMarket,
-        takerMarket,
-        makerAmount,
-        takerAmount,
+        market,
+        buy,
+        amount,
+        price,
         expiration=None,
     ):
         '''
         Make an order object
 
-        :param makerMarket: required
-        :type makerMarket: number
+        :param market: required
+        :type market: string (one of 'WETH-DAI', 'WETH-USDC', or 'DAI-USDC')
 
-        :param takerMarket: required
-        :type takerMarket: number
+        :param buy: required
+        :type buy: boolean
 
-        :param makerAmount: required
-        :type makerAmount: number
+        :param amount: required
+        :type amount: number
 
-        :param takerAmount: required
-        :type takerAmount: number
+        :param price: required
+        :type price: number
 
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
@@ -91,17 +91,20 @@ class Client(object):
         :raises: DydxAPIError
         '''
 
+        baseMarket, quoteMarket = utils.pair_to_base_quote_markets(market)
+
         order = {
-            'makerMarket': makerMarket,
-            'takerMarket': takerMarket,
-            'makerAmount': makerAmount,
-            'takerAmount': takerAmount,
+            'salt': random.randint(0, 2**256),
+            'isBuy': buy,
+            'baseMarket': baseMarket,
+            'quoteMarket': quoteMarket,
+            'amount': amount,
+            'limitPrice': price,
+            'triggerPrice': 0,
+            'limitFee': utils.get_limit_fee_for_order(baseMarket, amount),
             'makerAccountOwner': self.public_address,
             'makerAccountNumber': self.account_number,
-            'takerAccountOwner': self.TAKER_ACCOUNT_OWNER,
-            'takerAccountNumber': self.TAKER_ACCOUNT_NUMBER,
             'expiration': expiration or utils.epoch_in_four_weeks(),
-            'salt': random.randint(0, 2**256)
         }
         order['typedSignature'] = utils.sign_order(order, self.private_key)
         return order
@@ -408,8 +411,8 @@ class Client(object):
         '''
         Return historical trades for the loaded account
 
-        :param pairs: required
-        :type pairs: list of str
+        :param market: required
+        :type market: list of str
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -429,32 +432,33 @@ class Client(object):
             startingBefore=startingBefore
         )
 
-    def create_order(
+    def place_order(
         self,
-        makerMarket,
-        takerMarket,
-        makerAmount,
-        takerAmount,
+        market,
+        buy,
+        amount,
+        price,
         expiration=None,
         fillOrKill=False,
-        cancelAmountOnRevert=False,
         postOnly=False,
         clientId=None,
+        cancelAmountOnRevert=False,
+        cancelId=None,
     ):
         '''
         Create an order
 
-        :param makerMarket: required
-        :type makerMarket: number
+        :param market: required
+        :type market: string (one of 'WETH-DAI', 'WETH-USDC', or 'DAI-USDC')
 
-        :param takerMarket: required
-        :type takerMarket: number
+        :param buy: required
+        :type buy: boolean
 
-        :param makerAmount: required
-        :type makerAmount: number
+        :param amount: required
+        :type amount: number
 
-        :param takerAmount: required
-        :type takerAmount: number
+        :param price: required
+        :type price: number
 
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
@@ -462,14 +466,17 @@ class Client(object):
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
-        :param cancelAmountOnRevert: optional, defaults to False
-        :type cancelAmountOnRevert: bool
-
         :param postOnly: optional, defaults to False
         :type postOnly: bool
 
         :param clientId: optional, defaults to None
         :type clientId: string
+
+        :param cancelAmountOnRevert: optional, defaults to False
+        :type cancelAmountOnRevert: bool
+
+        :param cancelId: optional, defaults to None
+        :type cancelId: string
 
         :returns: Order
 
@@ -477,20 +484,35 @@ class Client(object):
         '''
 
         order = self._make_order(
-            makerMarket,
-            takerMarket,
-            makerAmount,
-            takerAmount,
+            market,
+            buy,
+            amount,
+            price,
             expiration,
         )
 
-        return self._post('/v1/dex/orders', data=json.dumps(
+        return self._post('/v2/orders', data=json.dumps(
             utils.remove_nones({
                 'fillOrKill': fillOrKill,
-                'cancelAmountOnRevert': cancelAmountOnRevert,
                 'postOnly': postOnly,
                 'clientId': clientId,
-                'order': {k: str(v) for k, v in order.items()}
+                'cancelAmountOnRevert': cancelAmountOnRevert,
+                'cancelId': cancelId,
+                'order': {
+                    'isBuy': order['isBuy'],
+                    'isDecreaseOnly': False,
+                    'baseMarket': str(order['baseMarket']),
+                    'quoteMarket': str(order['quoteMarket']),
+                    'amount': str(order['amount']),
+                    'limitPrice': str(order['limitPrice']),
+                    'triggerPrice': str(order['triggerPrice']),
+                    'limitFee': str(order['limitFee']),
+                    'makerAccountOwner': order['makerAccountOwner'],
+                    'makerAccountNumber': str(order['makerAccountNumber']),
+                    'expiration': str(order['expiration']),
+                    'salt': str(order['salt']),
+                    'typedSignature': order['typedSignature'],
+                }
             })
         ))
 
@@ -510,79 +532,8 @@ class Client(object):
         '''
         signature = utils.sign_cancel_order(hash, self.private_key)
         return self._delete(
-            '/v1/dex/orders/' + hash,
+            '/v2/orders/' + hash,
             headers={'Authorization': 'Bearer ' + signature}
-        )
-
-    def replace_order(
-        self,
-        makerMarket,
-        takerMarket,
-        makerAmount,
-        takerAmount,
-        cancelId,
-        expiration=None,
-        fillOrKill=False,
-        cancelAmountOnRevert=False,
-        postOnly=False,
-        clientId=None,
-    ):
-        '''
-        Replace an existing order
-
-        :param makerMarket: required
-        :type makerMarket: number
-
-        :param takerMarket: required
-        :type takerMarket: number
-
-        :param makerAmount: required
-        :type makerAmount: number
-
-        :param takerAmount: required
-        :type takerAmount: number
-
-        :param cancelId: required
-        :type cancelId: str
-
-        :param expiration: optional, defaults to 28 days from now
-        :type expiration: number
-
-        :param fillOrKill: optional, defaults to False
-        :type fillOrKill: bool
-
-        :param cancelAmountOnRevert: optional, defaults to False
-        :type cancelAmountOnRevert: bool
-
-        :param postOnly: optional, defaults to False
-        :type postOnly: bool
-
-        :param clientId: optional, defaults to None
-        :type clientId: string
-
-        :returns: Order
-
-        :raises: DydxAPIError
-        '''
-
-        order = self._make_order(
-            makerMarket,
-            takerMarket,
-            makerAmount,
-            takerAmount,
-            expiration,
-        )
-
-        return self._post(
-            '/v1/dex/orders/replace',
-            data=json.dumps(utils.remove_nones({
-                'cancelId': cancelId,
-                'fillOrKill': fillOrKill,
-                'cancelAmountOnRevert': cancelAmountOnRevert,
-                'postOnly': postOnly,
-                'clientId': clientId,
-                'order': {k: str(v) for k, v in order.items()},
-            })),
         )
 
     def get_orderbook(
