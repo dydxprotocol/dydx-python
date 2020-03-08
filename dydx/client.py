@@ -63,19 +63,21 @@ class Client(object):
     def _make_order(
         self,
         market,
-        buy,
+        side,
         amount,
         price,
         expiration=None,
+        limitFee=None,
+        postOnly=False,
     ):
         '''
         Make an order object
 
         :param market: required
-        :type market: string (one of 'WETH-DAI', 'WETH-USDC', or 'DAI-USDC')
+        :type market: str in list ["WETH-DAI", "WETH-USDC", "DAI-USDC"]
 
-        :param buy: required
-        :type buy: boolean
+        :param side: required
+        :type side: str in list ["BUY", "SELL"]
 
         :param amount: required
         :type amount: number
@@ -86,22 +88,31 @@ class Client(object):
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
 
+        :param limitFee: optional, overrides the default limitFee
+        :type limitFee: number
+
+        :param postOnly: optional, defaults to False
+        :type postOnly: bool
+
         :returns: Order
 
         :raises: DydxAPIError
         '''
 
         baseMarket, quoteMarket = utils.pair_to_base_quote_markets(market)
+        isBuy = utils.get_is_buy(side)
+        if limitFee is None:
+            limitFee = utils.get_limit_fee(baseMarket, amount, postOnly)
 
         order = {
             'salt': random.randint(0, 2**256),
-            'isBuy': buy,
+            'isBuy': isBuy,
             'baseMarket': baseMarket,
             'quoteMarket': quoteMarket,
             'amount': amount,
             'limitPrice': price,
             'triggerPrice': 0,
-            'limitFee': utils.get_limit_fee_for_order(baseMarket, amount),
+            'limitFee': limitFee,
             'makerAccountOwner': self.public_address,
             'makerAccountNumber': self.account_number,
             'expiration': expiration or utils.epoch_in_four_weeks(),
@@ -435,24 +446,25 @@ class Client(object):
     def place_order(
         self,
         market,
-        buy,
+        side,
         amount,
         price,
         expiration=None,
+        limitFee=None,
         fillOrKill=False,
         postOnly=False,
         clientId=None,
-        cancelAmountOnRevert=False,
+        cancelAmountOnRevert=None,
         cancelId=None,
     ):
         '''
         Create an order
 
         :param market: required
-        :type market: string (one of 'WETH-DAI', 'WETH-USDC', or 'DAI-USDC')
+        :type market: str in list ["WETH-DAI", "WETH-USDC", "DAI-USDC"]
 
-        :param buy: required
-        :type buy: boolean
+        :param side: required
+        :type side: str in list ["BUY", "SELL"]
 
         :param amount: required
         :type amount: number
@@ -463,6 +475,9 @@ class Client(object):
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
 
+        :param limitFee: optional, defaults to None
+        :type limitFee: number
+
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
 
@@ -472,7 +487,7 @@ class Client(object):
         :param clientId: optional, defaults to None
         :type clientId: string
 
-        :param cancelAmountOnRevert: optional, defaults to False
+        :param cancelAmountOnRevert: optional, defaults to None
         :type cancelAmountOnRevert: bool
 
         :param cancelId: optional, defaults to None
@@ -485,10 +500,12 @@ class Client(object):
 
         order = self._make_order(
             market,
-            buy,
+            side,
             amount,
             price,
             expiration,
+            limitFee,
+            postOnly,
         )
 
         return self._post('/v2/orders', data=json.dumps(

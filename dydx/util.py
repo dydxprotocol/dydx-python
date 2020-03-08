@@ -210,13 +210,23 @@ def pair_to_base_quote_markets(pair):
     raise ValueError('Invalid pair')
 
 
-def get_order_flags(salt, buy):
+def get_is_buy(side):
+    if side == consts.SIDE_BUY:
+        return True
+    elif side == consts.SIDE_SELL:
+        return False
+    raise ValueError('Invalid side')
+
+
+def get_order_flags(salt, isBuy):
     salt_string = strip_hex_prefix(hex(salt))[-63:]
-    salt_string += '1' if buy else '0'
+    salt_string += '1' if isBuy else '0'
     return '0x' + salt_string.rjust(64, '0')
 
 
-def get_limit_fee_for_order(base_market, amount):
+def get_limit_fee(base_market, amount, postOnly):
+    if postOnly:
+        return 0
     if base_market == consts.MARKET_WETH:
         if (amount < consts.SMALL_TRADE_SIZE_WETH):
             return consts.FEE_SMALL_WETH

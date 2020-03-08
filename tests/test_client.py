@@ -42,7 +42,7 @@ def _create_additional_matcher(client):
         body = json.loads(request.body)
         assert not body['fillOrKill']
         assert not body['postOnly']
-        assert not body['cancelAmountOnRevert']
+        assert 'cancelAmountOnRevert' not in body
         assert 'cancelId' not in body
         assert 'clientId' not in body
 
@@ -457,7 +457,7 @@ class TestClient():
             )
             result = client.place_order(
                 market='WETH-DAI',
-                buy=True,
+                side='BUY',
                 amount=10000,
                 price=250.01
             )

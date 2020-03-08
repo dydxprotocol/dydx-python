@@ -37,6 +37,10 @@ DECIMALS_SAI = 18
 DECIMALS_USDC = 6
 DECIMALS_DAI = 18
 
+# ------------ Sides ------------
+SIDE_BUY = 'BUY'
+SIDE_SELL = 'SELL'
+
 # ------------ Fees ------------
 SMALL_TRADE_SIZE_WETH = 0.5 * (10 ** DECIMALS_WETH)
 SMALL_TRADE_SIZE_DAI = 100 * (10 ** DECIMALS_DAI)
