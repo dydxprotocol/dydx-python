@@ -433,4 +433,4 @@ mock_get_balances_json = {
   }
 }
 
-mock_create_order_json = mock_cancel_order_json
+mock_place_order_json = mock_cancel_order_json

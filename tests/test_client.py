@@ -14,67 +14,70 @@ ADDRESS_2 = '0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0'
 ADDRESS_1_NO_PREFIX = ADDRESS_1[2:]
 ADDRESS_2_NO_PREFIX = ADDRESS_2[2:]
 ORDER = {
-    'maker_market': 0,
-    'taker_market': 1,
-    'maker_amount': 100,
-    'taker_amount': 200,
-    'maker_account_owner': ADDRESS_1,
-    'maker_account_number': 111,
-    'taker_account_owner': ADDRESS_2,
-    'taker_account_number': 222,
+    'isBuy': True,
+    'baseMarket': 0,
+    'quoteMarket': 3,
+    'amount': 10000,
+    'limitPrice': 250.01,
+    'triggerPrice': 0,
+    'limitFee':  0.0050,
+    'makerAccountOwner': ADDRESS_1,
+    'makerAccountNumber': 111,
     'expiration': 1234,
-    'salt': 4321
+    'salt': 0,
 }
-ORDER_HASH = '0x444df3e619ce1865bb0138e89b3e92c29b1e57a6b35c4708822923bc60985c3d'  # noqa: E501
-CANCEL_ORDER_HASH = '0x45170c4ba6a19e3c9e25a4f3b3d65b9f2d988ad80f7a270528c03a7c484e1774'  # noqa: E501
-ORDER_SIGNATURE = '0x94c3e787666fa8d2611ce4543ced732e0f4591958d8a12feded84746bcde457f1dab3fc66cafc5eda9c6e755f0f82f4049353cad165a5187d4ec66d365c9c2991b01'  # noqa: E501
-CANCEL_ORDER_SIGNATURE = '0x3d29b75f6aad6db4cc02259bcaa98f465a164392b1c4743d7d0f53b73f64f29f00b495dc132b9a63b4aa613c15909878be1274b575549a959d9586eb7b5e520a1b01'  # noqa: E501
-PAIRS = ['WETH-DAI', 'DAI-WETH']
-MARKETS = ['WETH-DAI']
+ORDER_HASH = '0x50538cce27ddd08a8a3732aaedb90b5ef55fd92a6819f5798edc043833776405'  # noqa: E501
+CANCEL_ORDER_HASH = '0xca25945c7cbc05dda130cff8f92acd555c464e22239e0864637aeec402e556c5'  # noqa: E501
+ORDER_SIGNATURE = '0x229e6e1926aadea40b933dd6b12c9f4daac3267df5ca31041c72a9f6f2a057fe6257a664cca749be666f4452b1aa3587f5bc844c6b4fe7c835da8a4cabf9fa461b01'  # noqa: E501
+CANCEL_ORDER_SIGNATURE = '0xe760368bbdb904809d2383606e27b9ab8ed57f47ce37dc67d4f87e59bb9102c46447f7ce20f1751cd7d670f2b7e4dec61da3288f242d3a003cc70b13a8560f7c1b01'  # noqa: E501
+MARKETS = ['WETH-DAI', 'DAI-WETH']
 LOCAL_NODE = 'http://0.0.0.0:8545'
 
 
 # ------------ Helper Functions ------------
 
-def _create_additional_matcher(client, cancelId=None):
+def _create_additional_matcher(client):
 
     def _additional_matcher(request):
         body = json.loads(request.body)
         assert not body['fillOrKill']
-        assert not body['cancelAmountOnRevert']
         assert not body['postOnly']
-        assert body['order']['takerMarket'] == '0'
-        assert body['order']['makerMarket'] == '1'
-        assert body['order']['takerAmount'] == '1000'
-        assert body['order']['makerAmount'] == '2000'
-        assert body['order']['makerAccountOwner'] == \
+        assert 'cancelAmountOnRevert' not in body
+        assert 'cancelId' not in body
+        assert 'clientId' not in body
+
+        order = body['order']
+        assert order['isBuy'] is True
+        assert order['isDecreaseOnly'] is False
+        assert order['baseMarket'] == '0'
+        assert order['quoteMarket'] == '3'
+        assert order['amount'] == '10000'
+        assert order['limitPrice'] == '250.01'
+        assert order['triggerPrice'] == '0'
+        assert order['limitFee'] == '0.005'
+        assert order['makerAccountOwner'] == \
             client.public_address
-        assert body['order']['makerAccountNumber'] == \
+        assert order['makerAccountNumber'] == \
             str(client.account_number)
-        assert body['order']['takerAccountOwner'] == \
-            client.TAKER_ACCOUNT_OWNER
-        assert body['order']['takerAccountNumber'] == \
-            str(client.TAKER_ACCOUNT_NUMBER)
         assert abs(
-            int(body['order']['expiration']) -
+            int(order['expiration']) -
             utils.epoch_in_four_weeks()) <= 10
-        assert body['order']['salt'].isnumeric()
-        sent_order = body['order']
+        assert order['salt'].isnumeric()
+
         expected_signature = utils.sign_order({
-            'makerMarket': int(sent_order['makerMarket']),
-            'takerMarket': int(sent_order['takerMarket']),
-            'makerAmount': int(sent_order['makerAmount']),
-            'takerAmount': int(sent_order['takerAmount']),
-            'makerAccountOwner': sent_order['makerAccountOwner'],
-            'makerAccountNumber': int(sent_order['makerAccountNumber']),
-            'takerAccountOwner': sent_order['takerAccountOwner'],
-            'takerAccountNumber': int(sent_order['takerAccountNumber']),
-            'expiration': int(sent_order['expiration']),
-            'salt': int(sent_order['salt']),
+            'isBuy': order['isBuy'],
+            'baseMarket': int(order['baseMarket']),
+            'quoteMarket': int(order['quoteMarket']),
+            'amount': int(order['amount']),
+            'limitPrice': float(order['limitPrice']),
+            'triggerPrice': float(order['triggerPrice']),
+            'limitFee':  float(order['limitFee']),
+            'makerAccountOwner': order['makerAccountOwner'],
+            'makerAccountNumber': int(order['makerAccountNumber']),
+            'expiration': int(order['expiration']),
+            'salt': int(order['salt'])
         }, client.private_key)
         assert body['order']['typedSignature'] == expected_signature
-        if cancelId:
-            assert body['cancelId'] == cancelId
         return True
 
     return _additional_matcher
@@ -441,22 +444,22 @@ class TestClient():
             )
             assert result == json_obj
 
-    # ------------ create_order ------------
+    # ------------ place_order ------------
 
-    def test_create_order_success(self):
+    def test_place_order_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
-            json_obj = tests.test_json.mock_create_order_json
+            json_obj = tests.test_json.mock_place_order_json
             rm.post(
-                'https://api.dydx.exchange/v1/dex/orders',
+                'https://api.dydx.exchange/v2/orders',
                 additional_matcher=_create_additional_matcher(client),
                 json=json_obj
             )
-            result = client.create_order(
-                makerMarket=1,
-                takerMarket=0,
-                makerAmount=2000,
-                takerAmount=1000
+            result = client.place_order(
+                market='WETH-DAI',
+                side='BUY',
+                amount=10000,
+                price=250.01
             )
             assert result == json_obj
 
@@ -478,34 +481,11 @@ class TestClient():
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_cancel_order_json
             rm.delete(
-                'https://api.dydx.exchange/v1/dex/orders/' + ORDER_HASH,
+                'https://api.dydx.exchange/v2/orders/' + ORDER_HASH,
                 additional_matcher=additional_matcher,
                 json=json_obj
             )
             result = client.cancel_order(
                 hash=ORDER_HASH
-            )
-            assert result == json_obj
-
-    # ------------ replace_order ------------
-
-    def test_replace_order_success(self):
-        client = Client(PRIVATE_KEY_1)
-        with requests_mock.mock() as rm:
-            json_obj = tests.test_json.mock_create_order_json
-            rm.post(
-                'https://api.dydx.exchange/v1/dex/orders/replace',
-                additional_matcher=_create_additional_matcher(
-                    client,
-                    cancelId=ORDER_HASH
-                ),
-                json=json_obj
-            )
-            result = client.replace_order(
-                makerMarket=1,
-                takerMarket=0,
-                makerAmount=2000,
-                takerAmount=1000,
-                cancelId=ORDER_HASH
             )
             assert result == json_obj

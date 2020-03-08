@@ -5,17 +5,17 @@ import time
 import dydx.constants as consts
 
 EIP712_ORDER_STRUCT_STRING = \
-  'LimitOrder(' + \
-  'uint256 makerMarket,' + \
-  'uint256 takerMarket,' + \
-  'uint256 makerAmount,' + \
-  'uint256 takerAmount,' + \
+  'CanonicalOrder(' + \
+  'bytes32 flags,' + \
+  'uint256 baseMarket,' + \
+  'uint256 quoteMarket,' + \
+  'uint256 amount,' + \
+  'uint256 limitPrice,' + \
+  'uint256 triggerPrice,' + \
+  'uint256 limitFee,' + \
   'address makerAccountOwner,' + \
   'uint256 makerAccountNumber,' + \
-  'address takerAccountOwner,' + \
-  'uint256 takerAccountNumber,' + \
-  'uint256 expiration,' + \
-  'uint256 salt' + \
+  'uint256 expiration' + \
   ')'
 
 EIP712_DOMAIN_STRING = \
@@ -61,10 +61,10 @@ def get_domain_hash():
         ],
         [
             hash_string(EIP712_DOMAIN_STRING),
-            hash_string('LimitOrders'),
+            hash_string('CanonicalOrders'),
             hash_string('1.1'),
             consts.NETWORK_ID,
-            address_to_bytes32(consts.LIMIT_ORDERS_ADDRESS)
+            address_to_bytes32(consts.CANONICAL_ORDERS_ADDRESS)
         ]
     ).hex()
 
@@ -76,29 +76,29 @@ def get_order_hash(order):
     struct_hash = Web3.solidityKeccak(
         [
             'bytes32',
+            'bytes32',
+            'uint256',
+            'uint256',
             'uint256',
             'uint256',
             'uint256',
             'uint256',
             'bytes32',
-            'uint256',
-            'bytes32',
-            'uint256',
             'uint256',
             'uint256'
         ],
         [
             hash_string(EIP712_ORDER_STRUCT_STRING),
-            order['makerMarket'],
-            order['takerMarket'],
-            order['makerAmount'],
-            order['takerAmount'],
+            get_order_flags(order['salt'], order['isBuy']),
+            int(order['baseMarket']),
+            int(order['quoteMarket']),
+            int(order['amount']),
+            int(order['limitPrice'] * (10**18)),
+            int(order['triggerPrice'] * (10**18)),
+            int(order['limitFee'] * (10**18)),
             address_to_bytes32(order['makerAccountOwner']),
-            order['makerAccountNumber'],
-            address_to_bytes32(order['takerAccountOwner']),
-            order['takerAccountNumber'],
-            order['expiration'],
-            order['salt']
+            int(order['makerAccountNumber']),
+            int(order['expiration'])
         ]
     ).hex()
     return get_eip712_hash(get_domain_hash(), struct_hash)
@@ -187,14 +187,54 @@ def epoch_in_four_weeks():
 
 
 def token_to_wei(amount, market):
-    if market == 0:
+    if market == consts.MARKET_WETH:
         decimals = consts.DECIMALS_WETH
-    elif market == 1:
+    elif market == consts.MARKET_SAI:
         decimals = consts.DECIMALS_SAI
-    elif market == 2:
+    elif market == consts.MARKET_USDC:
         decimals = consts.DECIMALS_USDC
-    elif market == 3:
+    elif market == consts.MARKET_DAI:
         decimals = consts.DECIMALS_DAI
     else:
         raise ValueError('Invalid market number')
     return int(amount * (10 ** decimals))
+
+
+def pair_to_base_quote_markets(pair):
+    if pair == consts.PAIR_WETH_DAI:
+        return (consts.MARKET_WETH, consts.MARKET_DAI)
+    elif pair == consts.PAIR_WETH_USDC:
+        return (consts.MARKET_WETH, consts.MARKET_USDC)
+    elif pair == consts.PAIR_DAI_USDC:
+        return (consts.MARKET_DAI, consts.MARKET_USDC)
+    raise ValueError('Invalid pair')
+
+
+def get_is_buy(side):
+    if side == consts.SIDE_BUY:
+        return True
+    elif side == consts.SIDE_SELL:
+        return False
+    raise ValueError('Invalid side')
+
+
+def get_order_flags(salt, isBuy):
+    salt_string = strip_hex_prefix(hex(salt))[-63:]
+    salt_string += '1' if isBuy else '0'
+    return '0x' + salt_string.rjust(64, '0')
+
+
+def get_limit_fee(base_market, amount, postOnly):
+    if postOnly:
+        return 0
+    if base_market == consts.MARKET_WETH:
+        if (amount < consts.SMALL_TRADE_SIZE_WETH):
+            return consts.FEE_SMALL_WETH
+        else:
+            return consts.FEE_LARGE_WETH
+    elif base_market == consts.MARKET_DAI:
+        if (amount < consts.SMALL_TRADE_SIZE_DAI):
+            return consts.FEE_SMALL_DAI
+        else:
+            return consts.FEE_LARGE_DAI
+    raise ValueError('Invalid base_market')
