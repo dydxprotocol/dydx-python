@@ -5,6 +5,7 @@ import requests_mock
 import tests.test_json
 import dydx.util as utils
 import dydx.constants as consts
+from decimal import Decimal
 from dydx.client import Client
 
 PRIVATE_KEY_1 = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # noqa: E501
@@ -18,9 +19,9 @@ ORDER = {
     'baseMarket': 0,
     'quoteMarket': 3,
     'amount': 10000,
-    'limitPrice': 250.01,
-    'triggerPrice': 0,
-    'limitFee':  0.0050,
+    'limitPrice': Decimal('250.01'),
+    'triggerPrice': Decimal(0),
+    'limitFee':  Decimal('0.0050'),
     'makerAccountOwner': ADDRESS_1,
     'makerAccountNumber': 111,
     'expiration': 1234,
@@ -36,7 +37,7 @@ LOCAL_NODE = 'http://0.0.0.0:8545'
 
 # ------------ Helper Functions ------------
 
-def _create_additional_matcher(client):
+def _create_additional_matcher(client, args):
 
     def _additional_matcher(request):
         body = json.loads(request.body)
@@ -47,12 +48,12 @@ def _create_additional_matcher(client):
         assert 'clientId' not in body
 
         order = body['order']
-        assert order['isBuy'] is True
+        assert order['isBuy'] is args['isBuy']
         assert order['isDecreaseOnly'] is False
-        assert order['baseMarket'] == '0'
-        assert order['quoteMarket'] == '3'
+        assert order['baseMarket'] == str(args['baseMarket'])
+        assert order['quoteMarket'] == str(args['quoteMarket'])
         assert order['amount'] == '10000'
-        assert order['limitPrice'] == '250.01'
+        assert order['limitPrice'] == str(args['limitPrice'])
         assert order['triggerPrice'] == '0'
         assert order['limitFee'] == '0.005'
         assert order['makerAccountOwner'] == \
@@ -69,9 +70,9 @@ def _create_additional_matcher(client):
             'baseMarket': int(order['baseMarket']),
             'quoteMarket': int(order['quoteMarket']),
             'amount': int(order['amount']),
-            'limitPrice': float(order['limitPrice']),
-            'triggerPrice': float(order['triggerPrice']),
-            'limitFee':  float(order['limitFee']),
+            'limitPrice': Decimal(order['limitPrice']),
+            'triggerPrice': Decimal(order['triggerPrice']),
+            'limitFee':  Decimal(order['limitFee']),
             'makerAccountOwner': order['makerAccountOwner'],
             'makerAccountNumber': int(order['makerAccountNumber']),
             'expiration': int(order['expiration']),
@@ -446,20 +447,53 @@ class TestClient():
 
     # ------------ place_order ------------
 
-    def test_place_order_success(self):
+    def test_place_order_success_wethdai(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_place_order_json
             rm.post(
                 'https://api.dydx.exchange/v2/orders',
-                additional_matcher=_create_additional_matcher(client),
+                additional_matcher=_create_additional_matcher(
+                    client,
+                    {
+                        'baseMarket': '0',
+                        'quoteMarket': '3',
+                        'isBuy': True,
+                        'limitPrice': '250.01',
+                    },
+                ),
                 json=json_obj
             )
             result = client.place_order(
                 market='WETH-DAI',
                 side='BUY',
                 amount=10000,
-                price=250.01
+                price=Decimal('250.01')
+            )
+            assert result == json_obj
+
+    def test_place_order_success_daiusdc(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_place_order_json
+            rm.post(
+                'https://api.dydx.exchange/v2/orders',
+                additional_matcher=_create_additional_matcher(
+                    client,
+                    {
+                        'baseMarket': '0',
+                        'quoteMarket': '2',
+                        'isBuy': False,
+                        'limitPrice': '0.00000000025001',
+                    },
+                ),
+                json=json_obj
+            )
+            result = client.place_order(
+                market='WETH-USDC',
+                side='SELL',
+                amount=10000,
+                price=Decimal('0.00000000025001')
             )
             assert result == json_obj
 

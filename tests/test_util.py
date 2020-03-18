@@ -1,6 +1,7 @@
 import pytest
 import dydx.util as utils
 import dydx.constants as consts
+from decimal import Decimal
 
 PRIVATE_KEY_1 = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # noqa: E501
 PRIVATE_KEY_2 = '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1'  # noqa: E501
@@ -13,9 +14,9 @@ ORDER = {
     'baseMarket': 0,
     'quoteMarket': 3,
     'amount': 10000,
-    'limitPrice': 250.01,
-    'triggerPrice': 0,
-    'limitFee':  0.0050,
+    'limitPrice': Decimal('250.01'),
+    'triggerPrice': Decimal(0),
+    'limitFee':  Decimal('0.0050'),
     'makerAccountOwner': ADDRESS_1,
     'makerAccountNumber': 111,
     'expiration': 1234,

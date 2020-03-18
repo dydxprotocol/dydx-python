@@ -93,9 +93,9 @@ def get_order_hash(order):
             int(order['baseMarket']),
             int(order['quoteMarket']),
             int(order['amount']),
-            int(order['limitPrice'] * (10**18)),
-            int(order['triggerPrice'] * (10**18)),
-            int(order['limitFee'] * (10**18)),
+            int(order['limitPrice'] * consts.BASE_DECIMAL),
+            int(order['triggerPrice'] * consts.BASE_DECIMAL),
+            int(order['limitFee'] * consts.BASE_DECIMAL),
             address_to_bytes32(order['makerAccountOwner']),
             int(order['makerAccountNumber']),
             int(order['expiration'])
@@ -238,3 +238,7 @@ def get_limit_fee(base_market, amount, postOnly):
         else:
             return consts.FEE_LARGE_DAI
     raise ValueError('Invalid base_market')
+
+
+def decimalToStr(d):
+    return '{:f}'.format(d.normalize())
