@@ -205,12 +205,12 @@ trades = {
 #### Create an Order
 
 ```python
-# Create order to SELL 10 ETH for 2000 DAI (a price of 200 DAI/ETH)
+# Create order to SELL 10 ETH for 2504.90 DAI (a price of 250.49 DAI/ETH)
 created_order = client.place_order(
     market=consts.PAIR_WETH_DAI,
     side=consts.SIDE_BUY,
     amount=utils.token_to_wei(10, consts.MARKET_WETH),
-    price=250.49,
+    price=Decimal('250.49'),
     fillOrKill=False,
     postOnly=False
 )

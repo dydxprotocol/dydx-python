@@ -44,12 +44,13 @@ SIDE_BUY = 'BUY'
 SIDE_SELL = 'SELL'
 
 # ------------ Fees ------------
+FROM_BIPS = Decimal('1e-4')
 SMALL_TRADE_SIZE_WETH = 0.5 * (10 ** DECIMALS_WETH)
 SMALL_TRADE_SIZE_DAI = 100 * (10 ** DECIMALS_DAI)
-FEE_SMALL_WETH = 50 / (10 ** 4)
-FEE_LARGE_WETH = 15 / (10 ** 4)
-FEE_SMALL_DAI = 50 / (10 ** 4)
-FEE_LARGE_DAI = 5 / (10 ** 4)
+FEE_SMALL_WETH = Decimal(50) * FROM_BIPS
+FEE_LARGE_WETH = Decimal(15) * FROM_BIPS
+FEE_SMALL_DAI = Decimal(50) * FROM_BIPS
+FEE_LARGE_DAI = Decimal(5) * FROM_BIPS
 
 # ------------ Transaction Constants ------------
 DEFAULT_GAS_AMOUNT = 250000
@@ -63,4 +64,3 @@ PRICE_ORACLE_USD_MULTIPLIER = 10 ** 36
 
 # ------------ Math ------------
 BASE_DECIMAL = Decimal(10 ** 18)
-MAX_PRECISION = Decimal('1e-14')

@@ -5,6 +5,7 @@ import requests_mock
 import tests.test_json
 import dydx.util as utils
 import dydx.constants as consts
+from decimal import Decimal
 from dydx.client import Client
 
 PRIVATE_KEY_1 = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # noqa: E501
@@ -18,9 +19,9 @@ ORDER = {
     'baseMarket': 0,
     'quoteMarket': 3,
     'amount': 10000,
-    'limitPrice': 250.01,
-    'triggerPrice': 0,
-    'limitFee':  0.0050,
+    'limitPrice': Decimal('250.01'),
+    'triggerPrice': Decimal(0),
+    'limitFee':  Decimal('0.0050'),
     'makerAccountOwner': ADDRESS_1,
     'makerAccountNumber': 111,
     'expiration': 1234,
@@ -69,9 +70,9 @@ def _create_additional_matcher(client, args):
             'baseMarket': int(order['baseMarket']),
             'quoteMarket': int(order['quoteMarket']),
             'amount': int(order['amount']),
-            'limitPrice': float(order['limitPrice']),
-            'triggerPrice': float(order['triggerPrice']),
-            'limitFee':  float(order['limitFee']),
+            'limitPrice': Decimal(order['limitPrice']),
+            'triggerPrice': Decimal(order['triggerPrice']),
+            'limitFee':  Decimal(order['limitFee']),
             'makerAccountOwner': order['makerAccountOwner'],
             'makerAccountNumber': int(order['makerAccountNumber']),
             'expiration': int(order['expiration']),
@@ -458,7 +459,7 @@ class TestClient():
                         'baseMarket': '0',
                         'quoteMarket': '3',
                         'isBuy': True,
-                        'limitPrice': 250.01,
+                        'limitPrice': '250.01',
                     },
                 ),
                 json=json_obj
@@ -467,7 +468,7 @@ class TestClient():
                 market='WETH-DAI',
                 side='BUY',
                 amount=10000,
-                price=250.01
+                price=Decimal('250.01')
             )
             assert result == json_obj
 
@@ -492,7 +493,7 @@ class TestClient():
                 market='WETH-USDC',
                 side='SELL',
                 amount=10000,
-                price=0.00000000025001
+                price=Decimal('0.00000000025001')
             )
             assert result == json_obj
 

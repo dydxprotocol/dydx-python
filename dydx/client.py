@@ -2,6 +2,7 @@ import json
 import random
 import requests
 import dydx.util as utils
+from decimal import Decimal
 from dydx.eth import Eth
 from .exceptions import DydxAPIError
 
@@ -83,7 +84,7 @@ class Client(object):
         :type amount: number
 
         :param price: required
-        :type price: number
+        :type price: Decimal
 
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
@@ -111,7 +112,7 @@ class Client(object):
             'quoteMarket': quoteMarket,
             'amount': amount,
             'limitPrice': price,
-            'triggerPrice': 0,
+            'triggerPrice': Decimal(0),
             'limitFee': limitFee,
             'makerAccountOwner': self.public_address,
             'makerAccountNumber': self.account_number,
@@ -470,13 +471,13 @@ class Client(object):
         :type amount: number
 
         :param price: required
-        :type price: number
+        :type price: Decimal
 
         :param expiration: optional, defaults to 28 days from now
         :type expiration: number
 
         :param limitFee: optional, defaults to None
-        :type limitFee: number
+        :type limitFee: Decimal
 
         :param fillOrKill: optional, defaults to False
         :type fillOrKill: bool
@@ -508,10 +509,6 @@ class Client(object):
             postOnly,
         )
 
-        limitPrice = utils.numberToDecimal(order['limitPrice'])
-        triggerPrice = utils.numberToDecimal(order['triggerPrice'])
-        limitFee = utils.numberToDecimal(order['limitFee'])
-
         return self._post('/v2/orders', data=json.dumps(
             utils.remove_nones({
                 'fillOrKill': fillOrKill,
@@ -525,9 +522,9 @@ class Client(object):
                     'baseMarket': str(order['baseMarket']),
                     'quoteMarket': str(order['quoteMarket']),
                     'amount': str(order['amount']),
-                    'limitPrice': str(limitPrice),
-                    'triggerPrice': str(triggerPrice),
-                    'limitFee': str(limitFee),
+                    'limitPrice': str(order['limitPrice']),
+                    'triggerPrice': str(order['triggerPrice']),
+                    'limitFee': str(order['limitFee']),
                     'makerAccountOwner': order['makerAccountOwner'],
                     'makerAccountNumber': str(order['makerAccountNumber']),
                     'expiration': str(order['expiration']),
