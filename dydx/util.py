@@ -238,3 +238,7 @@ def get_limit_fee(base_market, amount, postOnly):
         else:
             return consts.FEE_LARGE_DAI
     raise ValueError('Invalid base_market')
+
+
+def decimalToStr(d):
+    return '{:f}'.format(d.normalize())
