@@ -508,6 +508,10 @@ class Client(object):
             postOnly,
         )
 
+        limitPrice = utils.numberToDecimal(order['limitPrice'])
+        triggerPrice = utils.numberToDecimal(order['triggerPrice'])
+        limitFee = utils.numberToDecimal(order['limitFee'])
+
         return self._post('/v2/orders', data=json.dumps(
             utils.remove_nones({
                 'fillOrKill': fillOrKill,
@@ -521,9 +525,9 @@ class Client(object):
                     'baseMarket': str(order['baseMarket']),
                     'quoteMarket': str(order['quoteMarket']),
                     'amount': str(order['amount']),
-                    'limitPrice': str(order['limitPrice']),
-                    'triggerPrice': str(order['triggerPrice']),
-                    'limitFee': str(order['limitFee']),
+                    'limitPrice': str(limitPrice),
+                    'triggerPrice': str(triggerPrice),
+                    'limitFee': str(limitFee),
                     'makerAccountOwner': order['makerAccountOwner'],
                     'makerAccountNumber': str(order['makerAccountNumber']),
                     'expiration': str(order['expiration']),

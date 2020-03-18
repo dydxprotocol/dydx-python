@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 # ------------ Universal Constants ------------
 NETWORK_ID = 1
 MAX_SOLIDITY_UINT = 115792089237316195423570985008687907853269984665640564039457584007913129639935  # noqa: E501
@@ -58,3 +60,7 @@ DEFAULT_GAS_PRICE_ADDITION = 3
 # ------------ Protocol ------------
 MINIMUM_COLLATERALIZATION = 1.15
 PRICE_ORACLE_USD_MULTIPLIER = 10 ** 36
+
+# ------------ Math ------------
+BASE_DECIMAL = Decimal(10 ** 18)
+MAX_PRECISION = Decimal('1e-14')

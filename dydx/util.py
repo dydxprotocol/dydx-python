@@ -1,4 +1,5 @@
 from web3 import Web3
+from decimal import Decimal
 import eth_keys
 import eth_account
 import time
@@ -73,6 +74,9 @@ def get_order_hash(order):
     '''
     Returns the final signable EIP712 hash for an order.
     '''
+    limitPrice = numberToDecimal(order['limitPrice']) * consts.BASE_DECIMAL
+    triggerPrice = numberToDecimal(order['triggerPrice']) * consts.BASE_DECIMAL
+    limitFee = numberToDecimal(order['limitFee']) * consts.BASE_DECIMAL
     struct_hash = Web3.solidityKeccak(
         [
             'bytes32',
@@ -93,9 +97,9 @@ def get_order_hash(order):
             int(order['baseMarket']),
             int(order['quoteMarket']),
             int(order['amount']),
-            int(order['limitPrice'] * (10**18)),
-            int(order['triggerPrice'] * (10**18)),
-            int(order['limitFee'] * (10**18)),
+            int(limitPrice),
+            int(triggerPrice),
+            int(limitFee),
             address_to_bytes32(order['makerAccountOwner']),
             int(order['makerAccountNumber']),
             int(order['expiration'])
@@ -238,3 +242,7 @@ def get_limit_fee(base_market, amount, postOnly):
         else:
             return consts.FEE_LARGE_DAI
     raise ValueError('Invalid base_market')
+
+
+def numberToDecimal(n):
+    return Decimal(n).quantize(consts.MAX_PRECISION)
