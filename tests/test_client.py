@@ -36,7 +36,7 @@ LOCAL_NODE = 'http://0.0.0.0:8545'
 
 # ------------ Helper Functions ------------
 
-def _create_additional_matcher(client):
+def _create_additional_matcher(client, args):
 
     def _additional_matcher(request):
         body = json.loads(request.body)
@@ -47,12 +47,12 @@ def _create_additional_matcher(client):
         assert 'clientId' not in body
 
         order = body['order']
-        assert order['isBuy'] is True
+        assert order['isBuy'] is args['isBuy']
         assert order['isDecreaseOnly'] is False
-        assert order['baseMarket'] == '0'
-        assert order['quoteMarket'] == '3'
+        assert order['baseMarket'] == str(args['baseMarket'])
+        assert order['quoteMarket'] == str(args['quoteMarket'])
         assert order['amount'] == '10000'
-        assert order['limitPrice'] == '250.01'
+        assert order['limitPrice'] == str(args['limitPrice'])
         assert order['triggerPrice'] == '0'
         assert order['limitFee'] == '0.005'
         assert order['makerAccountOwner'] == \
@@ -446,13 +446,21 @@ class TestClient():
 
     # ------------ place_order ------------
 
-    def test_place_order_success(self):
+    def test_place_order_success_wethdai(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_place_order_json
             rm.post(
                 'https://api.dydx.exchange/v2/orders',
-                additional_matcher=_create_additional_matcher(client),
+                additional_matcher=_create_additional_matcher(
+                    client,
+                    {
+                        'baseMarket': '0',
+                        'quoteMarket': '3',
+                        'isBuy': True,
+                        'limitPrice': 250.01,
+                    },
+                ),
                 json=json_obj
             )
             result = client.place_order(
@@ -460,6 +468,31 @@ class TestClient():
                 side='BUY',
                 amount=10000,
                 price=250.01
+            )
+            assert result == json_obj
+
+    def test_place_order_success_daiusdc(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_place_order_json
+            rm.post(
+                'https://api.dydx.exchange/v2/orders',
+                additional_matcher=_create_additional_matcher(
+                    client,
+                    {
+                        'baseMarket': '0',
+                        'quoteMarket': '2',
+                        'isBuy': False,
+                        'limitPrice': '0.00000000025001',
+                    },
+                ),
+                json=json_obj
+            )
+            result = client.place_order(
+                market='WETH-USDC',
+                side='SELL',
+                amount=10000,
+                price=0.00000000025001
             )
             assert result == json_obj
 
