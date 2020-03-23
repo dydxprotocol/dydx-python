@@ -568,3 +568,30 @@ class Client(object):
         :raises: DydxAPIError
         '''
         return self._get('/v1/orderbook/' + market)
+
+    def get_market(
+        self,
+        market
+    ):
+        '''
+        Get market from market pair
+
+        :param market: required, name of market (e.g. WETH-DAI)
+
+        :returns: { market: MarketMessageV2 }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v2/markets/' + market)
+
+    def get_markets(
+        self
+    ):
+        '''
+        Get all markets
+
+        :returns: { markets : { [market: string]: MarketMessageV2 } }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v2/markets/')

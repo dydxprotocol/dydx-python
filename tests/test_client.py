@@ -445,6 +445,29 @@ class TestClient():
             )
             assert result == json_obj
 
+    # ------------ get_market ------------
+
+    def test_get_market_success(self):
+        client = Client(PRIVATE_KEY_1)
+        market = MARKETS[0]
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_market_json
+            uri = 'https://api.dydx.exchange/v2/markets/' + market
+            rm.get(uri, json=json_obj)
+            result = client.get_market(
+                market=market,
+            )
+            assert result == json_obj
+
+    def test_get_markets_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_markets_json
+            uri = 'https://api.dydx.exchange/v2/markets/'
+            rm.get(uri, json=json_obj)
+            result = client.get_markets()
+            assert result == json_obj
+
     # ------------ place_order ------------
 
     def test_place_order_success_wethdai(self):

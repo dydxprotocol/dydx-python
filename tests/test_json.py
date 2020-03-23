@@ -203,6 +203,92 @@ mock_get_orders_json = {
     ]
 }
 
+mock_get_market_json = {
+    'market': {
+        'WETH-DAI': {
+            'name': 'WETH-DAI',
+            'baseCurrency': {
+                'currency': 'WETH',
+                'decimals': 18,
+                'soloMarketId': 0,
+            },
+            'quoteCurrency': {
+                'currency': 'DAI',
+                'decimals': 18,
+                'soloMarketId': 3,
+            },
+            'minimumTickSize': '0.01',
+            'minimumOrderSize': '100000000000000000',
+            'smallOrderThreshold': '500000000000000000',
+            'makerFee': '0',
+            'largeTakerFee': '0.005',
+            'smallTakerFee': '0.0015',
+        },
+    }
+}
+
+mock_get_markets_json = {
+    'markets': {
+        'WETH-DAI': {
+            'name': 'WETH-DAI',
+            'baseCurrency': {
+                'currency': 'WETH',
+                'decimals': 18,
+                'soloMarketId': 0,
+            },
+            'quoteCurrency': {
+                'currency': 'DAI',
+                'decimals': 18,
+                'soloMarketId': 3,
+            },
+            'minimumTickSize': '0.01',
+            'minimumOrderSize': '100000000000000000',
+            'smallOrderThreshold': '500000000000000000',
+            'makerFee': '0',
+            'largeTakerFee': '0.005',
+            'smallTakerFee': '0.0015',
+        },
+        'WETH-USDC': {
+            'name': 'WETH-USDC',
+            'baseCurrency': {
+                'currency': 'WETH',
+                'decimals': 18,
+                'soloMarketId': 0,
+            },
+            'quoteCurrency': {
+                'currency': 'USDC',
+                'decimals': 6,
+                'soloMarketId': 2,
+            },
+            'minimumTickSize': '0.00000000000001',
+            'minimumOrderSize': '100000000000000000',
+            'smallOrderThreshold': '500000000000000000',
+            'makerFee': '0',
+            'largeTakerFee': '0.005',
+            'smallTakerFee': '0.0015',
+        },
+        'DAI-USDC': {
+            'name': 'DAI-USDC',
+            'baseCurrency': {
+                'currency': 'DAI',
+                'decimals': 18,
+                'soloMarketId': 3,
+            },
+            'quoteCurrency': {
+                'currency': 'USDC',
+                'decimals': 6,
+                'soloMarketId': 1,
+            },
+            'minimumTickSize': '0.0000000000000001',
+            'minimumOrderSize': '20000000000000000000',
+            'smallOrderThreshold': '100000000000000000000',
+            'makerFee': '0',
+            'largeTakerFee': '0.005',
+            'smallTakerFee': '0.0005',
+        },
+    }
+}
+
 mock_get_fills_json = {
     'fills': [
         {
