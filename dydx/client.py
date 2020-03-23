@@ -594,4 +594,4 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        return self._get('/v2/markets/')
+        return self._get('/v2/markets')

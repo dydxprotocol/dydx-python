@@ -463,7 +463,7 @@ class TestClient():
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_get_markets_json
-            uri = 'https://api.dydx.exchange/v2/markets/'
+            uri = 'https://api.dydx.exchange/v2/markets'
             rm.get(uri, json=json_obj)
             result = client.get_markets()
             assert result == json_obj
