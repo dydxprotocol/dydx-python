@@ -226,7 +226,7 @@ def get_order_flags(salt, isBuy):
 
 def get_limit_fee(base_market, amount, postOnly):
     if postOnly:
-        return 0
+        return consts.FEE_ZERO
     if base_market == consts.MARKET_WETH:
         if (amount < consts.SMALL_TRADE_SIZE_WETH):
             return consts.FEE_SMALL_WETH

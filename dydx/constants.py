@@ -51,6 +51,7 @@ FEE_SMALL_WETH = Decimal(50) * FROM_BIPS
 FEE_LARGE_WETH = Decimal(15) * FROM_BIPS
 FEE_SMALL_DAI = Decimal(50) * FROM_BIPS
 FEE_LARGE_DAI = Decimal(5) * FROM_BIPS
+FEE_ZERO = Decimal(0)
 
 # ------------ Transaction Constants ------------
 DEFAULT_GAS_AMOUNT = 250000
