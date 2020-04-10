@@ -396,7 +396,7 @@ mock_get_markets_json = {
 ```python
 # deposit 10 ETH
 # does not require set_allowance
-tx_hash = client.eth.deposit(
+tx_hash = client.eth.solo.deposit(
   market=consts.MARKET_WETH,
   wei=utils.token_to_wei(10, consts.MARKET_WETH)
 )
@@ -407,7 +407,7 @@ receipt = client.eth.get_receipt(tx_hash)
 tx_hash = client.eth.set_allowance(market=consts.MARKET_DAI) # must only be called once, ever
 receipt = client.eth.get_receipt(tx_hash)
 
-tx_hash = client.eth.deposit(
+tx_hash = client.eth.solo.deposit(
   market=consts.MARKET_DAI,
   wei=utils.token_to_wei(100, consts.MARKET_DAI)
 )
@@ -418,7 +418,7 @@ receipt = client.eth.get_receipt(tx_hash)
 tx_hash = client.eth.set_allowance(market=consts.MARKET_USDC) # must only be called once, ever
 receipt = client.eth.get_receipt(tx_hash)
 
-tx_hash = client.eth.deposit(
+tx_hash = client.eth.solo.deposit(
   market=consts.MARKET_USDC,
   wei=utils.token_to_wei(100, consts.MARKET_USDC)
 )
@@ -426,7 +426,7 @@ receipt = client.eth.get_receipt(tx_hash)
 
 
 # withdraw 50 USDC
-tx_hash = client.eth.withdraw(
+tx_hash = client.eth.solo.withdraw(
   market=consts.MARKET_USDC,
   wei=utils.token_to_wei(50, consts.MARKET_USDC)
 )
@@ -434,7 +434,7 @@ receipt = client.eth.get_receipt(tx_hash)
 
 
 # withdraw all DAI (including interest)
-tx_hash = client.eth.withdraw_to_zero(market=consts.MARKET_DAI)
+tx_hash = client.eth.solo.withdraw_to_zero(market=consts.MARKET_DAI)
 receipt = client.eth.get_receipt(tx_hash)
 ```
 
