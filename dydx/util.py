@@ -4,36 +4,6 @@ import eth_account
 import time
 import dydx.constants as consts
 
-EIP712_ORDER_STRUCT_STRING = \
-  'CanonicalOrder(' + \
-  'bytes32 flags,' + \
-  'uint256 baseMarket,' + \
-  'uint256 quoteMarket,' + \
-  'uint256 amount,' + \
-  'uint256 limitPrice,' + \
-  'uint256 triggerPrice,' + \
-  'uint256 limitFee,' + \
-  'address makerAccountOwner,' + \
-  'uint256 makerAccountNumber,' + \
-  'uint256 expiration' + \
-  ')'
-
-EIP712_DOMAIN_STRING = \
-  'EIP712Domain(' + \
-  'string name,' + \
-  'string version,' + \
-  'uint256 chainId,' + \
-  'address verifyingContract' + \
-  ')'
-
-EIP712_CANCEL_ORDER_STRUCT_STRING = \
-  'CancelLimitOrder(' + \
-  'string action,' + \
-  'bytes32[] orderHashes' + \
-  ')'
-
-EIP712_CANCEL_ACTION = 'Cancel Orders'
-
 
 def get_eip712_hash(domain_hash, struct_hash):
     return Web3.solidityKeccak(
@@ -48,87 +18,6 @@ def get_eip712_hash(domain_hash, struct_hash):
             struct_hash
         ]
     ).hex()
-
-
-def get_domain_hash():
-    return Web3.solidityKeccak(
-        [
-            'bytes32',
-            'bytes32',
-            'bytes32',
-            'uint256',
-            'bytes32'
-        ],
-        [
-            hash_string(EIP712_DOMAIN_STRING),
-            hash_string('CanonicalOrders'),
-            hash_string('1.1'),
-            consts.NETWORK_ID,
-            address_to_bytes32(consts.CANONICAL_ORDERS_ADDRESS)
-        ]
-    ).hex()
-
-
-def get_order_hash(order):
-    '''
-    Returns the final signable EIP712 hash for an order.
-    '''
-    struct_hash = Web3.solidityKeccak(
-        [
-            'bytes32',
-            'bytes32',
-            'uint256',
-            'uint256',
-            'uint256',
-            'uint256',
-            'uint256',
-            'uint256',
-            'bytes32',
-            'uint256',
-            'uint256'
-        ],
-        [
-            hash_string(EIP712_ORDER_STRUCT_STRING),
-            get_order_flags(order['salt'], order['isBuy']),
-            int(order['baseMarket']),
-            int(order['quoteMarket']),
-            int(order['amount']),
-            int(order['limitPrice'] * consts.BASE_DECIMAL),
-            int(order['triggerPrice'] * consts.BASE_DECIMAL),
-            int(order['limitFee'] * consts.BASE_DECIMAL),
-            address_to_bytes32(order['makerAccountOwner']),
-            int(order['makerAccountNumber']),
-            int(order['expiration'])
-        ]
-    ).hex()
-    return get_eip712_hash(get_domain_hash(), struct_hash)
-
-
-def get_cancel_order_hash(order_hash):
-    '''
-    Returns the final signable EIP712 hash for a cancel order API call.
-    '''
-    action_hash = Web3.solidityKeccak(
-        ['string'],
-        [EIP712_CANCEL_ACTION]
-    ).hex()
-    orders_hash = Web3.solidityKeccak(
-        ['bytes32'],
-        [order_hash]
-    ).hex()
-    struct_hash = Web3.solidityKeccak(
-        [
-            'bytes32',
-            'bytes32',
-            'bytes32',
-        ],
-        [
-            hash_string(EIP712_CANCEL_ORDER_STRUCT_STRING),
-            action_hash,
-            orders_hash,
-        ]
-    ).hex()
-    return get_eip712_hash(get_domain_hash(), struct_hash)
 
 
 def hash_string(input):
@@ -160,24 +49,6 @@ def private_key_to_address(key):
     return eth_keys_key.public_key.to_checksum_address()
 
 
-def sign_order(order, private_key):
-    order_hash = get_order_hash(order)
-    return sign_hash(order_hash, private_key)
-
-
-def sign_cancel_order(order_hash, private_key):
-    cancel_order_hash = get_cancel_order_hash(order_hash)
-    return sign_hash(cancel_order_hash, private_key)
-
-
-def sign_hash(hash, private_key):
-    result = eth_account.account.Account.sign_message(
-        eth_account.messages.encode_defunct(hexstr=hash),
-        private_key
-    )
-    return result['signature'].hex() + '01'
-
-
 def remove_nones(original):
     return {k: v for k, v in original.items() if v is not None}
 
@@ -195,8 +66,10 @@ def token_to_wei(amount, market):
         decimals = consts.DECIMALS_USDC
     elif market == consts.MARKET_DAI:
         decimals = consts.DECIMALS_DAI
+    elif market == consts.MARKET_PBTC:
+        decimals = consts.DECIMALS_PBTC
     else:
-        raise ValueError('Invalid market number')
+        raise ValueError('Invalid market')
     return int(amount * (10 ** decimals))
 
 
@@ -207,6 +80,8 @@ def pair_to_base_quote_markets(pair):
         return (consts.MARKET_WETH, consts.MARKET_USDC)
     elif pair == consts.PAIR_DAI_USDC:
         return (consts.MARKET_DAI, consts.MARKET_USDC)
+    elif pair == consts.PAIR_PBTC_USDC:
+        return (consts.MARKET_PBTC, consts.MARKET_USDC)
     raise ValueError('Invalid pair')
 
 
@@ -218,15 +93,15 @@ def get_is_buy(side):
     raise ValueError('Invalid side')
 
 
-def get_order_flags(salt, isBuy):
-    salt_string = strip_hex_prefix(hex(salt))[-63:]
-    salt_string += '1' if isBuy else '0'
-    return '0x' + salt_string.rjust(64, '0')
-
-
 def get_limit_fee(base_market, amount, postOnly):
     if postOnly:
-        return consts.FEE_ZERO
+        if base_market == consts.MARKET_PBTC:
+            if (amount < consts.SMALL_TRADE_SIZE_PBTC):
+                return consts.FEE_ZERO
+            else:
+                return consts.FEE_MAKER_PBTC
+        else:
+            return consts.FEE_ZERO
     if base_market == consts.MARKET_WETH:
         if (amount < consts.SMALL_TRADE_SIZE_WETH):
             return consts.FEE_SMALL_WETH
@@ -237,8 +112,21 @@ def get_limit_fee(base_market, amount, postOnly):
             return consts.FEE_SMALL_DAI
         else:
             return consts.FEE_LARGE_DAI
+    elif base_market == consts.MARKET_PBTC:
+        if (amount < consts.SMALL_TRADE_SIZE_PBTC):
+            return consts.FEE_SMALL_PBTC
+        else:
+            return consts.FEE_LARGE_PBTC
     raise ValueError('Invalid base_market')
 
 
 def decimalToStr(d):
     return '{:f}'.format(d.normalize())
+
+
+def sign_hash(hash, private_key):
+    result = eth_account.account.Account.sign_message(
+        eth_account.messages.encode_defunct(hexstr=hash),
+        private_key
+    )
+    return result['signature'].hex() + '01'

@@ -28,6 +28,10 @@ class Eth(object):
             consts.PAYABLE_PROXY_ADDRESS,
             'abi/payableproxy.json'
         )
+        self.perpetual = self._create_contract(
+            consts.PERPETUAL_ADDRESS,
+            'abi/perpetualv1.json'
+        )
         self.weth_contract = self._create_contract(
             consts.WETH_ADDRESS,
             'abi/erc20.json'
