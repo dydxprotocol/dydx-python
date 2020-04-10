@@ -23,7 +23,7 @@ EIP712_DOMAIN_STRING = \
   ')'
 
 EIP712_CANCEL_ORDER_STRUCT_STRING = \
-  'CancelLimitOrder(' + \
+  'CancelOrder(' + \
   'string action,' + \
   'bytes32[] orderHashes' + \
   ')'
@@ -54,6 +54,7 @@ def get_order_hash(order):
     '''
     Returns the final signable EIP712 hash for an order.
     '''
+
     struct_hash = Web3.solidityKeccak(
         [
             'bytes32',
@@ -68,11 +69,11 @@ def get_order_hash(order):
         ],
         [
             utils.hash_string(EIP712_ORDER_STRUCT_STRING),
-            get_order_flags(order['salt'], order['isBuy']),
+            get_order_flags(order['salt'], order['isBuy'], order['limitFee']),
             int(order['amount']),
             int(order['limitPrice'] * consts.BASE_DECIMAL),
             int(order['triggerPrice'] * consts.BASE_DECIMAL),
-            int(order['limitFee'] * consts.BASE_DECIMAL),
+            int(abs(order['limitFee']) * consts.BASE_DECIMAL),
             utils.address_to_bytes32(order['maker']),
             utils.address_to_bytes32(order['taker']),
             int(order['expiration'])
@@ -118,7 +119,10 @@ def sign_cancel_order(order_hash, private_key):
     return utils.sign_hash(cancel_order_hash, private_key)
 
 
-def get_order_flags(salt, isBuy):
+def get_order_flags(salt, isBuy, limitFee):
     salt_string = utils.strip_hex_prefix(hex(salt))[-63:]
-    salt_string += '1' if isBuy else '0'
+    salt_int = 0
+    salt_int += 1 if isBuy else 0
+    salt_int += 4 if (limitFee < 0) else 0
+    salt_string += str(salt_int)
     return '0x' + salt_string.rjust(64, '0')

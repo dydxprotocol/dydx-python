@@ -36,14 +36,14 @@ class TestSoloOrders():
         hash = solo_orders.get_cancel_order_hash(ORDER_HASH)
         assert hash == CANCEL_ORDER_HASH
 
-    def test_sign_order(self):
+    def test_solo_orders_sign_order(self):
         signature = solo_orders.sign_order(
             order=ORDER,
             private_key=PRIVATE_KEY_1
         )
         assert signature == ORDER_SIGNATURE
 
-    def test_sign_cancel_order(self):
+    def test_solo_orders_sign_cancel_order(self):
         signature = solo_orders.sign_cancel_order(
             order_hash=ORDER_HASH,
             private_key=PRIVATE_KEY_1
