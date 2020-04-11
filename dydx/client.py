@@ -2,14 +2,15 @@ import json
 import random
 import requests
 import dydx.util as utils
+import dydx.constants as consts
+import dydx.solo_orders as solo_orders
+import dydx.perp_orders as perp_orders
 from decimal import Decimal
 from dydx.eth import Eth
 from .exceptions import DydxAPIError
 
 
 class Client(object):
-    TAKER_ACCOUNT_OWNER = '0xf809e07870dca762B9536d61A4fBEF1a17178092'
-    TAKER_ACCOUNT_NUMBER = 0
     BASE_API_URI = 'https://api.dydx.exchange'
 
     def __init__(
@@ -61,7 +62,7 @@ class Client(object):
     def _delete(self, *args, **kwargs):
         return self._request('delete', *args, **kwargs)
 
-    def _make_order(
+    def _make_solo_order(
         self,
         market,
         side,
@@ -75,7 +76,8 @@ class Client(object):
         Make an order object
 
         :param market: required
-        :type market: str in list ["WETH-DAI", "WETH-USDC", "DAI-USDC"]
+        :type market: str in list
+            ["WETH-DAI", "WETH-USDC", "DAI-USDC"]
 
         :param side: required
         :type side: str in list ["BUY", "SELL"]
@@ -118,7 +120,68 @@ class Client(object):
             'makerAccountNumber': self.account_number,
             'expiration': expiration or utils.epoch_in_four_weeks(),
         }
-        order['typedSignature'] = utils.sign_order(order, self.private_key)
+        order['typedSignature'] = \
+            solo_orders.sign_order(order, self.private_key)
+        return order
+
+    def _make_perp_order(
+        self,
+        market,
+        side,
+        amount,
+        price,
+        expiration=None,
+        limitFee=None,
+        postOnly=False,
+    ):
+        '''
+        Make an order object
+
+        :param market: required
+        :type market: str in list
+            ["PBTC-USDC"]
+
+        :param side: required
+        :type side: str in list ["BUY", "SELL"]
+
+        :param amount: required
+        :type amount: number
+
+        :param price: required
+        :type price: Decimal
+
+        :param expiration: optional, defaults to 28 days from now
+        :type expiration: number
+
+        :param limitFee: optional, overrides the default limitFee
+        :type limitFee: number
+
+        :param postOnly: optional, defaults to False
+        :type postOnly: bool
+
+        :returns: Order
+
+        :raises: DydxAPIError
+        '''
+
+        baseMarket, _ = utils.pair_to_base_quote_markets(market)
+        isBuy = utils.get_is_buy(side)
+        if limitFee is None:
+            limitFee = utils.get_limit_fee(baseMarket, amount, postOnly)
+
+        order = {
+            'salt': random.randint(0, 2**256),
+            'isBuy': isBuy,
+            'amount': amount,
+            'limitPrice': price,
+            'triggerPrice': Decimal(0),
+            'limitFee': limitFee,
+            'maker': self.public_address,
+            'taker': consts.TAKER_ACCOUNT_OWNER,
+            'expiration': expiration or utils.epoch_in_four_weeks(),
+        }
+        order['typedSignature'] = \
+            perp_orders.sign_order(order, self.private_key)
         return order
 
     # -----------------------------------------------------------
@@ -185,7 +248,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -221,9 +284,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI",
-             "DAI-USDC",
-             "WETH-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -295,7 +356,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -331,7 +392,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -380,7 +441,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -462,7 +523,8 @@ class Client(object):
         Create an order
 
         :param market: required
-        :type market: str in list ["WETH-DAI", "WETH-USDC", "DAI-USDC"]
+        :type market: str in list
+            ["WETH-DAI", "WETH-USDC", "DAI-USDC", "PBTC-USDC"]
 
         :param side: required
         :type side: str in list ["BUY", "SELL"]
@@ -499,15 +561,63 @@ class Client(object):
         :raises: DydxAPIError
         '''
 
-        order = self._make_order(
-            market,
-            side,
-            amount,
-            price,
-            expiration,
-            limitFee,
-            postOnly,
-        )
+        if market == consts.PAIR_PBTC_USDC:
+
+            order = self._make_perp_order(
+                market,
+                side,
+                amount,
+                price,
+                expiration,
+                limitFee,
+                postOnly,
+            )
+
+            market_api_request = market
+
+            order_api_request = {
+                'isBuy': order['isBuy'],
+                'isDecreaseOnly': False,
+                'amount': str(order['amount']),
+                'limitPrice': utils.decimalToStr(order['limitPrice']),
+                'triggerPrice': utils.decimalToStr(order['triggerPrice']),
+                'limitFee': utils.decimalToStr(order['limitFee']),
+                'maker': order['maker'],
+                'taker': order['taker'],
+                'expiration': str(order['expiration']),
+                'salt': str(order['salt']),
+                'typedSignature': order['typedSignature'],
+            }
+
+        else:
+
+            order = self._make_solo_order(
+                market,
+                side,
+                amount,
+                price,
+                expiration,
+                limitFee,
+                postOnly,
+            )
+
+            market_api_request = None
+
+            order_api_request = {
+                'isBuy': order['isBuy'],
+                'isDecreaseOnly': False,
+                'baseMarket': str(order['baseMarket']),
+                'quoteMarket': str(order['quoteMarket']),
+                'amount': str(order['amount']),
+                'limitPrice': utils.decimalToStr(order['limitPrice']),
+                'triggerPrice': utils.decimalToStr(order['triggerPrice']),
+                'limitFee': utils.decimalToStr(order['limitFee']),
+                'makerAccountOwner': order['makerAccountOwner'],
+                'makerAccountNumber': str(order['makerAccountNumber']),
+                'expiration': str(order['expiration']),
+                'salt': str(order['salt']),
+                'typedSignature': order['typedSignature'],
+            }
 
         return self._post('/v2/orders', data=json.dumps(
             utils.remove_nones({
@@ -516,21 +626,8 @@ class Client(object):
                 'clientId': clientId,
                 'cancelAmountOnRevert': cancelAmountOnRevert,
                 'cancelId': cancelId,
-                'order': {
-                    'isBuy': order['isBuy'],
-                    'isDecreaseOnly': False,
-                    'baseMarket': str(order['baseMarket']),
-                    'quoteMarket': str(order['quoteMarket']),
-                    'amount': str(order['amount']),
-                    'limitPrice': utils.decimalToStr(order['limitPrice']),
-                    'triggerPrice': utils.decimalToStr(order['triggerPrice']),
-                    'limitFee': utils.decimalToStr(order['limitFee']),
-                    'makerAccountOwner': order['makerAccountOwner'],
-                    'makerAccountNumber': str(order['makerAccountNumber']),
-                    'expiration': str(order['expiration']),
-                    'salt': str(order['salt']),
-                    'typedSignature': order['typedSignature'],
-                }
+                'market': market_api_request,
+                'order': order_api_request
             })
         ))
 
@@ -548,7 +645,7 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        signature = utils.sign_cancel_order(hash, self.private_key)
+        signature = solo_orders.sign_cancel_order(hash, self.private_key)
         return self._delete(
             '/v2/orders/' + hash,
             headers={'Authorization': 'Bearer ' + signature}
