@@ -202,7 +202,21 @@ trades = {
 '''
 ```
 
-#### Create an Order
+#### Create an Order (Perp)
+
+```python
+# Create order to BUY 10 PBTC for 723,400.00 USDC (a price of 7234.00 PBTC/USDC)
+created_order = client.place_order(
+    market=consts.PAIR_PBTC_USDC,
+    side=consts.SIDE_BUY,
+    amount=utils.btc_to_sats(10),
+    price=Decimal('72.34'),
+    fillOrKill=False,
+    postOnly=False
+)
+```
+
+#### Create an Order (Solo)
 
 ```python
 # Create order to BUY 10 ETH for 2504.90 DAI (a price of 250.49 DAI/ETH)
@@ -391,7 +405,40 @@ mock_get_markets_json = {
 '''
 ```
 
-### Ethereum Transactions
+### Perpetual (BTC Trading)
+
+#### Deposit / Withdraw
+
+```python
+# deposit 100 USDC
+tx_hash = client.eth.perp.set_allowance() # must only be called once, ever
+receipt = client.eth.get_receipt(tx_hash)
+
+tx_hash = client.eth.perp.deposit(
+  amount=utils.token_to_wei(100, consts.MARKET_USDC)
+)
+receipt = client.eth.get_receipt(tx_hash)
+
+
+# withdraw 50 USDC
+tx_hash = client.eth.perp.withdraw(
+  amount=utils.token_to_wei(50, consts.MARKET_USDC)
+)
+receipt = client.eth.get_receipt(tx_hash)
+```
+
+#### Getters
+
+```python
+# get the USD value of PBTC
+# Since PBTC is measured in Satoshis (1e-8 of one BTC) and USDC has 6 decimal places,
+# a normal price of $7200 per BTC would return a result of 72.
+dai_price = client.eth.perp.get_oracle_price()
+```
+
+### Solo (ETH trading)
+
+#### Deposit / Withdraw
 
 ```python
 # deposit 10 ETH
@@ -404,7 +451,7 @@ receipt = client.eth.get_receipt(tx_hash)
 
 
 # deposit 100 DAI
-tx_hash = client.eth.set_allowance(market=consts.MARKET_DAI) # must only be called once, ever
+tx_hash = client.eth.solo.set_allowance(market=consts.MARKET_DAI) # must only be called once, ever
 receipt = client.eth.get_receipt(tx_hash)
 
 tx_hash = client.eth.solo.deposit(
@@ -415,7 +462,7 @@ receipt = client.eth.get_receipt(tx_hash)
 
 
 # deposit 100 USDC
-tx_hash = client.eth.set_allowance(market=consts.MARKET_USDC) # must only be called once, ever
+tx_hash = client.eth.solo.set_allowance(market=consts.MARKET_USDC) # must only be called once, ever
 receipt = client.eth.get_receipt(tx_hash)
 
 tx_hash = client.eth.solo.deposit(
@@ -438,28 +485,20 @@ tx_hash = client.eth.solo.withdraw_to_zero(market=consts.MARKET_DAI)
 receipt = client.eth.get_receipt(tx_hash)
 ```
 
-### Ethereum Getters
-
-Getting information directly from the blockchain by querying a node
+#### Getters
 
 ```python
 # get the USD value of one atomic unit of DAI
-dai_price = client.eth.get_oracle_price(consts.MARKET_DAI)
+dai_price = client.eth.solo.get_oracle_price(consts.MARKET_DAI)
 
 # get dYdX balances
-balances = client.eth.get_my_balances()
+balances = client.eth.solo.get_my_balances()
 '''
 balances = [
   -91971743707894,
   3741715702031854553560,
   2613206278
 ]
-'''
-
-# get Wallet balances
-balance = client.eth.get_my_wallet_balance(consts.MARKET_DAI)
-'''
-balance = 1000000000000000000
 '''
 
 # get dYdX account collateralization
@@ -474,6 +513,17 @@ assert(collateralization > consts.MINIMUM_COLLATERALIZATION)
 consts.MINIMUM_COLLATERALIZATION = 1.15
 '''
 ```
+
+### General Ethereum Getters
+
+Getting information directly from the blockchain by querying a node
+
+```python
+# get Wallet balances
+balance = client.eth.get_my_wallet_balance(consts.MARKET_DAI)
+'''
+balance = 1000000000000000000
+'''
 
 ## Testing
 ```

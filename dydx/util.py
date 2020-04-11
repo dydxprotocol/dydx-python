@@ -73,6 +73,10 @@ def token_to_wei(amount, market):
     return int(amount * (10 ** decimals))
 
 
+def btc_to_sats(amount):
+    return amount * (10 ** consts.DECIMALS_PBTC)
+
+
 def pair_to_base_quote_markets(pair):
     if pair == consts.PAIR_WETH_DAI:
         return (consts.MARKET_WETH, consts.MARKET_DAI)
