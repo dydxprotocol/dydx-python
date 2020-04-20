@@ -19,6 +19,9 @@ ADDRESS_1_NO_PREFIX = ADDRESS_1[2:]
 ORDER_HASH = '0x50538cce27ddd08a8a3732aaedb90b5ef55fd92a6819f5798edc043833776405'  # noqa: E501
 CANCEL_ORDER_SIGNATURE = '0xe760368bbdb904809d2383606e27b9ab8ed57f47ce37dc67d4f87e59bb9102c46447f7ce20f1751cd7d670f2b7e4dec61da3288f242d3a003cc70b13a8560f7c1b01'  # noqa: E501
 
+PERP_ORDER_HASH = '0x581a3e51afe0e0842ed4964a23d961cdf421999460860f1ab1a5a85d59bf9144'  # noqa: E501
+CANCEL_PERP_ORDER_SIGNATURE = '0x12ac3ffc41c59b5bfcb9fe440db74a533eacefcb09a7a5c4f41735ed9e8d1b4f4368984ef254bbe1c672d0b89226d21126d58dcc38e83ae3a2fdf22e4d7f89021b01'  # noqa: E501
+
 MARKETS = ['WETH-DAI', 'DAI-WETH']
 LOCAL_NODE = 'http://0.0.0.0:8545'
 
@@ -505,7 +508,7 @@ class TestClient():
             )
             assert result == json_obj
 
-    # ------------ get_market ------------
+    # ------------ get_market / get_markets ------------
 
     def test_get_market_success(self):
         client = Client(PRIVATE_KEY_1)
@@ -526,6 +529,29 @@ class TestClient():
             uri = 'https://api.dydx.exchange/v2/markets'
             rm.get(uri, json=json_obj)
             result = client.get_markets()
+            assert result == json_obj
+
+    # ------------ get_perpetual_market / get_perpetual_markets ------------
+
+    def test_get_perpetual_market_success(self):
+        client = Client(PRIVATE_KEY_1)
+        market = 'PBTC-USDC'
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_market_json
+            uri = 'https://api.dydx.exchange/v1/perpetual-markets/' + market
+            rm.get(uri, json=json_obj)
+            result = client.get_perpetual_market(
+                market=market,
+            )
+            assert result == json_obj
+
+    def test_get_markets_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_markets_json
+            uri = 'https://api.dydx.exchange/v1/perpetual-markets'
+            rm.get(uri, json=json_obj)
+            result = client.get_perpetual_markets()
             assert result == json_obj
 
     # ------------ place_order ------------
@@ -607,7 +633,7 @@ class TestClient():
             )
             assert result == json_obj
 
-    # ------------ cancel_order ------------
+    # ------------ cancel_order / cancel_perpetual_order ------------
 
     def test_cancel_order_no_hash_error(self):
         client = Client(PRIVATE_KEY_1)
@@ -631,5 +657,30 @@ class TestClient():
             )
             result = client.cancel_order(
                 hash=ORDER_HASH
+            )
+            assert result == json_obj
+
+    def test_cancel_perpetual_order_no_hash_error(self):
+        client = Client(PRIVATE_KEY_1)
+        with pytest.raises(TypeError) as error:
+            client.cancel_perpetual_order()
+        assert 'required positional argument: \'hash\'' in str(error.value)
+
+    def test_cancel_perpetual_order_success(self):
+
+        def additional_matcher(request):
+            return 'Bearer ' + CANCEL_PERP_ORDER_SIGNATURE == \
+                request.headers['Authorization']
+
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_cancel_order_json
+            rm.delete(
+                'https://api.dydx.exchange/v2/orders/' + PERP_ORDER_HASH,
+                additional_matcher=additional_matcher,
+                json=json_obj
+            )
+            result = client.cancel_perpetual_order(
+                hash=PERP_ORDER_HASH
             )
             assert result == json_obj
