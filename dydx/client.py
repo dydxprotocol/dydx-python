@@ -237,6 +237,34 @@ class Client(object):
             'number': number
         }))
 
+    def get_my_perpetual_balances(
+        self
+    ):
+        '''
+        Return perpetual balances for the loaded account
+
+        :returns: list of balances
+
+        :raises: DydxAPIError
+        '''
+        return self.get_perpetual_balances(address=self.public_address)
+
+    def get_perpetual_balances(
+        self,
+        address
+    ):
+        '''
+        Return perpetual balances for an address
+
+        :param address: required
+        :type address: str (address)
+
+        :returns: list of balances
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v1/perpetual-accounts/' + address)
+
     def get_my_orders(
         self,
         market,
@@ -673,7 +701,9 @@ class Client(object):
         '''
         Get market from market pair
 
-        :param market: required, name of market (e.g. WETH-DAI)
+        :param market: required
+        :type market: str in list
+            ["WETH-DAI", "WETH-USDC", "DAI-USDC"]
 
         :returns: { market: MarketMessageV2 }
 
@@ -692,3 +722,31 @@ class Client(object):
         :raises: DydxAPIError
         '''
         return self._get('/v2/markets')
+
+    def get_perpetual_market(
+        self,
+        market
+    ):
+        '''
+        Get market from market pair
+
+        :param market: required
+        :type market: str in list ["PBTC-DAI"]
+
+        :returns: { market: PerpetualMarket }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v1/perpetual-markets/' + market)
+
+    def get_perpetual_markets(
+        self
+    ):
+        '''
+        Get all markets
+
+        :returns: { markets : [market: PerpetualMarket] }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v1/perpetual-markets')

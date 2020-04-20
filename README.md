@@ -54,14 +54,11 @@ pairs = client.get_pairs()
 #### Account Balances
 
 ```python
-# Get my account balances
+# Get my account balances of margin-trading accounts
 my_balances = client.get_my_balances()
 
-# Get balances of another account
-balances = client.get_balances(
-    address='0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
-    number=0
-)
+# Get my account balances of perpetual accounts
+balances = client.get_my_perpetual_balances()
 ```
 
 #### Open Orders
