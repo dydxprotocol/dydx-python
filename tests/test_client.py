@@ -211,6 +211,36 @@ class TestClient():
             )
             assert result == json_obj
 
+    # ------------ get_my_perpetual_balances ------------
+
+    def test_get_my_perpetual_balances_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_balances_json
+            uri = 'https://api.dydx.exchange/v1/perpetual-accounts/' \
+                + client.public_address
+            rm.get(uri, json=json_obj)
+            result = client.get_my_perpetual_balances()
+            assert result == json_obj
+
+    # ------------ get_perpetual_balances ------------
+
+    def test_get_perpetual_balances_no_address_error(self):
+        client = Client(PRIVATE_KEY_1)
+        with pytest.raises(TypeError) as error:
+            client.get_perpetual_balances()
+        assert 'required positional argument: \'address\'' in str(error.value)
+
+    def test_get_perpetual_balances_address_success(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = tests.test_json.mock_get_balances_json
+            uri = 'https://api.dydx.exchange/v1/perpetual-accounts/' + \
+                ADDRESS_2
+            rm.get(uri, json=json_obj)
+            result = client.get_perpetual_balances(address=ADDRESS_2)
+            assert result == json_obj
+
     # ------------ get_my_orders ------------
 
     def test_get_my_orders_no_pairs_error(self):
