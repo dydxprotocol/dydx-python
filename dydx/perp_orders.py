@@ -23,7 +23,7 @@ EIP712_DOMAIN_STRING = \
   ')'
 
 EIP712_CANCEL_ORDER_STRUCT_STRING = \
-  'CancelOrder(' + \
+  'CancelLimitOrder(' + \
   'string action,' + \
   'bytes32[] orderHashes' + \
   ')'
