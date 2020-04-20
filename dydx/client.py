@@ -664,7 +664,7 @@ class Client(object):
         hash
     ):
         '''
-        Cancel an order
+        Cancel an order in a solo market.
 
         :param hash: required
         :type hash: str
@@ -674,6 +674,26 @@ class Client(object):
         :raises: DydxAPIError
         '''
         signature = solo_orders.sign_cancel_order(hash, self.private_key)
+        return self._delete(
+            '/v2/orders/' + hash,
+            headers={'Authorization': 'Bearer ' + signature}
+        )
+
+    def cancel_perpetual_order(
+        self,
+        hash
+    ):
+        '''
+        Cancel an order in a perpetual market.
+
+        :param hash: required
+        :type hash: str
+
+        :returns: Order
+
+        :raises: DydxAPIError
+        '''
+        signature = perp_orders.sign_cancel_order(hash, self.private_key)
         return self._delete(
             '/v2/orders/' + hash,
             headers={'Authorization': 'Bearer ' + signature}

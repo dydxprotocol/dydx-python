@@ -241,9 +241,15 @@ created_order = client.place_order(
 #### Cancel an Order
 
 ```python
-# Cancel the previously created order
+# Cancel the previously created solo order
 order_hash = created_order['order']['id']
 canceled_order = client.cancel_order(
+    hash=order_hash
+)
+
+# Cancel the previously created perpetual order
+order_hash = created_order['order']['id']
+canceled_order = client.cancel_perpetual_order(
     hash=order_hash
 )
 ```
@@ -300,14 +306,14 @@ orderbook = {
 '''
 ```
 
-#### Get Market
+#### Get Solo Market
 
 ```python
 market = client.get_market(
     market='WETH-DAI'
 )
 '''
-mock_get_market_json = {
+market = {
   "market": {
     "WETH-DAI": {
         "name": "WETH-DAI",
@@ -333,12 +339,12 @@ mock_get_market_json = {
 '''
 ```
 
-#### Get Markets
+#### Get Solo Markets
 
 ```python
-market = client.get_markets()
+markets = client.get_markets()
 '''
-mock_get_markets_json = {
+markets = {
   "markets": {
     "WETH-DAI": {
       "name": "WETH-DAI",
@@ -398,6 +404,52 @@ mock_get_markets_json = {
       "smallTakerFee": "0.0005",
     },
   }
+}
+'''
+```
+
+#### Get Perpetual Market
+
+```python
+market = client.get_perpetual_market(
+    market='PBTC-USDC'
+)
+'''
+market = {
+  "market": {
+    "uuid": "f6d20698-32ac-4f3a-a9c4-b6b7528b7b94",
+    "market": "PBTC-USDC",
+    "oraclePrice": "68.9615",
+    "fundingRate": "0",
+    "minCollateral": "0.1075",
+    "globalIndexValue": "0",
+    "globalIndexTimestamp": "1587407069",
+    "createdAt": "2020-04-09T22:42:35.696Z",
+    "updatedAt": "2020-04-20T18:48:06.334Z"
+  }
+}
+'''
+```
+
+#### Get Perpetual Markets
+
+```python
+markets = client.get_perpetual_markets()
+'''
+markets = {
+  "markets": [
+    {
+      "uuid": "f6d20698-32ac-4f3a-a9c4-b6b7528b7b94",
+      "market": "PBTC-USDC",
+      "oraclePrice": "68.9615",
+      "fundingRate": "0",
+      "minCollateral": "0.1075",
+      "globalIndexValue": "0",
+      "globalIndexTimestamp": "1587407069",
+      "createdAt": "2020-04-09T22:42:35.696Z",
+      "updatedAt": "2020-04-20T18:47:06.197Z"
+    }
+  ]
 }
 '''
 ```
