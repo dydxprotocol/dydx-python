@@ -545,7 +545,7 @@ class TestClient():
             )
             assert result == json_obj
 
-    def test_get_markets_success(self):
+    def test_get_perpetual_markets_success(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_get_markets_json
