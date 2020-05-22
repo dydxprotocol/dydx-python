@@ -23,6 +23,7 @@ PERP_ORDER_HASH = '0x581a3e51afe0e0842ed4964a23d961cdf421999460860f1ab1a5a85d59b
 CANCEL_PERP_ORDER_SIGNATURE = '0x12ac3ffc41c59b5bfcb9fe440db74a533eacefcb09a7a5c4f41735ed9e8d1b4f4368984ef254bbe1c672d0b89226d21126d58dcc38e83ae3a2fdf22e4d7f89021b01'  # noqa: E501
 
 MARKETS = ['WETH-DAI', 'DAI-WETH']
+PERPETUAL_MARKETS = ['PBTC-USDC']
 LOCAL_NODE = 'http://0.0.0.0:8545'
 
 
@@ -687,7 +688,7 @@ class TestClient():
 
     # ------------ get_funding_rates ------------
 
-    def test_get_funding_rates(self):
+    def test_get_funding_rates_no_params(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = {'key': 'mock get_funding_rates response'}
@@ -696,9 +697,21 @@ class TestClient():
             result = client.get_funding_rates()
             assert result == json_obj
 
+    def test_get_funding_rates_with_markets(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = {'key': 'mock get_funding_rates response'}
+            uri = 'https://api.dydx.exchange/v1/funding-rates' \
+                + '?markets=' + ','.join(PERPETUAL_MARKETS)
+            rm.get(uri, json=json_obj)
+            result = client.get_funding_rates(
+                markets=PERPETUAL_MARKETS,
+            )
+            assert result == json_obj
+
     # ------------ get_historical_funding_rates ------------
 
-    def test_get_historical_funding_rates(self):
+    def test_get_historical_funding_rates_no_params(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = {'key': 'mock get_historical_funding response'}
@@ -707,13 +720,53 @@ class TestClient():
             result = client.get_historical_funding_rates()
             assert result == json_obj
 
+    def test_get_historical_funding_rates_with_markets(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = {'key': 'mock get_historical_funding response'}
+            uri = 'https://api.dydx.exchange/v1/historical-funding-rates' \
+                + '?markets=' + ','.join(PERPETUAL_MARKETS)
+            rm.get(uri, json=json_obj)
+            result = client.get_historical_funding_rates(
+                markets=PERPETUAL_MARKETS,
+            )
+            assert result == json_obj
+
+    def test_get_historical_funding_rates_with_limit_and_offset(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = {'key': 'mock get_historical_funding response'}
+            limit = 50
+            offset = 25
+            uri = 'https://api.dydx.exchange/v1/historical-funding-rates' \
+                + '?limit=' + str(limit) \
+                + '&offset=' + str(offset)
+            rm.get(uri, json=json_obj)
+            result = client.get_historical_funding_rates(
+                limit=limit,
+                offset=offset,
+            )
+            assert result == json_obj
+
     # ------------ get_funding_index_price ------------
 
-    def test_get_funding_index_price(self):
+    def test_get_funding_index_price_no_params(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = {'key': 'mock get_funding_index response'}
             uri = 'https://api.dydx.exchange/v1/index-price'
             rm.get(uri, json=json_obj)
             result = client.get_funding_index_price()
+            assert result == json_obj
+
+    def test_get_funding_index_price_with_markets(self):
+        client = Client(PRIVATE_KEY_1)
+        with requests_mock.mock() as rm:
+            json_obj = {'key': 'mock get_funding_index response'}
+            uri = 'https://api.dydx.exchange/v1/index-price' \
+                + '?markets=' + ','.join(PERPETUAL_MARKETS)
+            rm.get(uri, json=json_obj)
+            result = client.get_funding_index_price(
+                markets=PERPETUAL_MARKETS,
+            )
             assert result == json_obj

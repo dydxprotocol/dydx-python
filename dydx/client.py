@@ -773,6 +773,7 @@ class Client(object):
 
     def get_funding_rates(
         self,
+        markets=None,
     ):
         '''
         Get the current and predicted funding rates.
@@ -796,10 +797,15 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        return self._get('/v1/funding-rates')
+        return self._get('/v1/funding-rates', params=utils.remove_nones({
+            'markets': None if markets is None else ','.join(markets),
+        }))
 
     def get_historical_funding_rates(
         self,
+        markets=None,
+        limit=None,
+        offset=None,
     ):
         '''
         Get historical funding rates.
@@ -807,14 +813,25 @@ class Client(object):
         :param markets: optional, defaults to all Perpetual markets
         :type markets: str in list ["PBTC-USDC"]
 
+        :param limit: optional, defaults to 100, which is the maximum
+        :type limit: number
+
+        :param offset: optional, defaults to 0
+        :type offset: number
+
         :returns: { [market: str]: { history: FundingRate[] } }
 
         :raises: DydxAPIError
         '''
-        return self._get('/v1/historical-funding-rates')
+        return self._get('/v1/historical-funding-rates', params=utils.remove_nones({
+            'markets': None if markets is None else ','.join(markets),
+            'limit': limit,
+            'offset': offset,
+        }))
 
     def get_funding_index_price(
         self,
+        markets=None,
     ):
         '''
         Get the index price used in the funding rate calculation.
@@ -826,4 +843,6 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        return self._get('/v1/index-price')
+        return self._get('/v1/index-price', params=utils.remove_nones({
+            'markets': None if markets is None else ','.join(markets),
+        }))
