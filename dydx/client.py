@@ -576,13 +576,13 @@ class Client(object):
         :type postOnly: bool
 
         :param clientId: optional, defaults to None
-        :type clientId: string
+        :type clientId: str
 
         :param cancelAmountOnRevert: optional, defaults to None
         :type cancelAmountOnRevert: bool
 
         :param cancelId: optional, defaults to None
-        :type cancelId: string
+        :type cancelId: str
 
         :returns: Order
 
@@ -737,7 +737,7 @@ class Client(object):
         '''
         Get all markets
 
-        :returns: { markets : { [market: string]: MarketMessageV2 } }
+        :returns: { markets : { [market: str]: MarketMessageV2 } }
 
         :raises: DydxAPIError
         '''
@@ -751,7 +751,7 @@ class Client(object):
         Get market from market pair
 
         :param market: required
-        :type market: str in list ["PBTC-DAI"]
+        :type market: str in list ["PBTC-USDC"]
 
         :returns: { market: PerpetualMarket }
 
@@ -765,8 +765,61 @@ class Client(object):
         '''
         Get all markets
 
-        :returns: { markets : [market: PerpetualMarket] }
+        :returns: { markets : [market: str]: PerpetualMarket } }
 
         :raises: DydxAPIError
         '''
         return self._get('/v1/perpetual-markets')
+
+    def get_funding_rates(
+        self,
+    ):
+        '''
+        Get the current and predicted funding rates.
+
+        IMPORTANT: The `current` value returned by this function is not active until it has been mined
+        on-chain, which may not happen for some period of time after the start of the hour. To get the
+        funding rate that is currently active on-chain, use the getMarkets() function.
+
+        The `current` rate is updated each hour, on the hour. The `predicted` rate is updated each
+        minute, on the minute, and may be null if no premiums have been calculated since the last
+        funding rate update.
+
+        :param markets: optional, defaults to all Perpetual markets
+        :type markets: str in list ["PBTC-USDC"]
+
+        :returns: { [market: str]: { current: FundingRate, predicted: FundingRate } }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v1/funding-rates')
+
+    def get_historical_funding_rates(
+        self,
+    ):
+        '''
+        Get historical funding rates.
+
+        :param markets: optional, defaults to all Perpetual markets
+        :type markets: str in list ["PBTC-USDC"]
+
+        :returns: { [market: str]: { history: FundingRate[] } }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v1/historical-funding-rates')
+
+    def get_funding_index_price(
+        self,
+    ):
+        '''
+        Get the index price used in the funding rate calculation.
+
+        :param markets: optional, defaults to all Perpetual markets
+        :type markets: str in list ["PBTC-USDC"]
+
+        :returns: { [market: str]: { price: str } }
+
+        :raises: DydxAPIError
+        '''
+        return self._get('/v1/index-price')
