@@ -823,11 +823,14 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        return self._get('/v1/historical-funding-rates', params=utils.remove_nones({
-            'markets': None if markets is None else ','.join(markets),
-            'limit': limit,
-            'offset': offset,
-        }))
+        return self._get(
+            '/v1/historical-funding-rates',
+            params=utils.remove_nones({
+                'markets': None if markets is None else ','.join(markets),
+                'limit': limit,
+                'offset': offset,
+            }),
+        )
 
     def get_funding_index_price(
         self,
