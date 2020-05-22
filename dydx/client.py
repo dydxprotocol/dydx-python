@@ -777,18 +777,21 @@ class Client(object):
         '''
         Get the current and predicted funding rates.
 
-        IMPORTANT: The `current` value returned by this function is not active until it has been mined
-        on-chain, which may not happen for some period of time after the start of the hour. To get the
-        funding rate that is currently active on-chain, use the getMarkets() function.
+        IMPORTANT: The `current` value returned by this function is not active
+        until it has been mined on-chain, which may not happen for some period
+        of time after the start of the hour. To get the funding rate that is
+        currently active on-chain, use the getMarkets() function.
 
-        The `current` rate is updated each hour, on the hour. The `predicted` rate is updated each
-        minute, on the minute, and may be null if no premiums have been calculated since the last
-        funding rate update.
+        The `current` rate is updated each hour, on the hour. The `predicted`
+        rate is updated each minute, on the minute, and may be null if no
+        premiums have been calculated since the last funding rate update.
 
         :param markets: optional, defaults to all Perpetual markets
         :type markets: str in list ["PBTC-USDC"]
 
-        :returns: { [market: str]: { current: FundingRate, predicted: FundingRate } }
+        :returns: {
+            [market: str]: { current: FundingRate, predicted: FundingRate }
+        }
 
         :raises: DydxAPIError
         '''

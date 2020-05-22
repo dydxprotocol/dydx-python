@@ -690,7 +690,7 @@ class TestClient():
     def test_get_funding_rates(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
-            json_obj = { 'key': 'mock get_funding_rates response' }
+            json_obj = {'key': 'mock get_funding_rates response'}
             uri = 'https://api.dydx.exchange/v1/funding-rates'
             rm.get(uri, json=json_obj)
             result = client.get_funding_rates()
@@ -701,7 +701,7 @@ class TestClient():
     def test_get_historical_funding_rates(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
-            json_obj = { 'key': 'mock get_historical_funding response' }
+            json_obj = {'key': 'mock get_historical_funding response'}
             uri = 'https://api.dydx.exchange/v1/historical-funding-rates'
             rm.get(uri, json=json_obj)
             result = client.get_historical_funding_rates()
@@ -712,7 +712,7 @@ class TestClient():
     def test_get_funding_index_price(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
-            json_obj = { 'key': 'mock get_funding_index response' }
+            json_obj = {'key': 'mock get_funding_index response'}
             uri = 'https://api.dydx.exchange/v1/index-price'
             rm.get(uri, json=json_obj)
             result = client.get_funding_index_price()
