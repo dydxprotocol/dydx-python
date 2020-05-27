@@ -65,7 +65,6 @@ class EthSolo(object):
             'otherAccountId': 0,
             'data': '0x'
         }]
-        print(operations)
         txOptions = dict(
             value=(
                 wei
