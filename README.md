@@ -499,6 +499,16 @@ tx_hash = client.eth.solo.deposit(
 receipt = client.eth.get_receipt(tx_hash)
 
 
+# deposit 10 ETH without using the ETH payable proxy address
+# does not require set_allowance
+tx_hash = client.eth.solo.deposit(
+  market=consts.MARKET_WETH,
+  wei=utils.token_to_wei(10, consts.MARKET_WETH),
+  asEth=False
+)
+receipt = client.eth.get_receipt(tx_hash)
+
+
 # deposit 100 DAI
 tx_hash = client.eth.solo.set_allowance(market=consts.MARKET_DAI) # must only be called once, ever
 receipt = client.eth.get_receipt(tx_hash)
@@ -517,6 +527,16 @@ receipt = client.eth.get_receipt(tx_hash)
 tx_hash = client.eth.solo.deposit(
   market=consts.MARKET_USDC,
   wei=utils.token_to_wei(100, consts.MARKET_USDC)
+)
+receipt = client.eth.get_receipt(tx_hash)
+
+
+# withdraw 10 ETH without using the ETH payable proxy address
+# does not require set_allowance
+tx_hash = client.eth.solo.deposit(
+  market=consts.MARKET_WETH,
+  wei=utils.token_to_wei(10, consts.MARKET_WETH),
+  asEth=False
 )
 receipt = client.eth.get_receipt(tx_hash)
 

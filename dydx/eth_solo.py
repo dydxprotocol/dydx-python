@@ -34,7 +34,7 @@ class EthSolo(object):
         wei,
         ref,
         otherAddress,
-        asEth = True
+        asEth=True
     ):
         if market < 0 or market >= consts.MARKET_INVALID:
             raise ValueError('Invalid market number')
@@ -119,8 +119,8 @@ class EthSolo(object):
     def deposit(
         self,
         market,
-        wei
-        asEth,
+        wei,
+        asEth=True
     ):
         '''
         Deposit funds into the protocol
@@ -178,7 +178,7 @@ class EthSolo(object):
             market=market,
             wei=wei,
             ref=consts.REFERENCE_DELTA,
-	        otherAddress=(to or self.public_address),
+            otherAddress=(to or self.public_address),
             asEth=asEth
         )
 

@@ -59,6 +59,15 @@ class TestEth():
         )
         self._validate_tx_hash(client, tx_hash)
 
+    def test_eth_solo_deposit_eth_without_proxy_success(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        tx_hash = client.eth.solo.deposit(
+            market=consts.MARKET_WETH,
+            wei=1000,
+            asEth=False
+        )
+        self._validate_tx_hash(client, tx_hash)
+
     def test_eth_solo_deposit_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.eth.solo.deposit(
@@ -83,6 +92,15 @@ class TestEth():
         tx_hash = client.eth.solo.withdraw(
             market=consts.MARKET_WETH,
             wei=1000
+        )
+        self._validate_tx_hash(client, tx_hash)
+
+    def test_eth_solo_withdraw_eth_without_proxy_success(self):
+        client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
+        tx_hash = client.eth.solo.withdraw(
+            market=consts.MARKET_WETH,
+            wei=1000,
+            asEth=False
         )
         self._validate_tx_hash(client, tx_hash)
 
