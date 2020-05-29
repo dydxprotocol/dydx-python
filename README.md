@@ -499,8 +499,8 @@ tx_hash = client.eth.solo.deposit(
 receipt = client.eth.get_receipt(tx_hash)
 
 
-# deposit 10 ETH without using the ETH payable proxy address
-# does not require set_allowance
+# deposit 10 WETH ERC20 tokens without using the WETH payable proxy address
+# requires set_allowance
 tx_hash = client.eth.solo.deposit(
   market=consts.MARKET_WETH,
   wei=utils.token_to_wei(10, consts.MARKET_WETH),
@@ -531,8 +531,7 @@ tx_hash = client.eth.solo.deposit(
 receipt = client.eth.get_receipt(tx_hash)
 
 
-# withdraw 10 ETH without using the ETH payable proxy address
-# does not require set_allowance
+# withdraw 10 WETH ERC20 tokens without using the WETH payable proxy address
 tx_hash = client.eth.solo.deposit(
   market=consts.MARKET_WETH,
   wei=utils.token_to_wei(10, consts.MARKET_WETH),

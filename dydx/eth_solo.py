@@ -102,7 +102,7 @@ class EthSolo(object):
         '''
         Set allowance on Solo for some token. Must be done only once per
         market. Not necessary for WETH (market 0) market. Not necessary for
-        WETH (market 0) if using the payableproxy
+        WETH (market 0) if depositing/withdrawing as ETH
 
         :param market: required
         :type market: number
