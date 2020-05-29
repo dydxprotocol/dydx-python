@@ -33,7 +33,8 @@ class EthSolo(object):
         market,
         wei,
         ref,
-        otherAddress
+        otherAddress,
+        asEth = True
     ):
         if market < 0 or market >= consts.MARKET_INVALID:
             raise ValueError('Invalid market number')
@@ -51,7 +52,7 @@ class EthSolo(object):
         }
         actualWithdrawOrDepositAddress = (
             consts.PAYABLE_PROXY_ADDRESS
-            if market == consts.MARKET_WETH
+            if market == consts.MARKET_WETH and asEth
             else otherAddress
         )
         operations = [{
@@ -67,12 +68,12 @@ class EthSolo(object):
         txOptions = dict(
             value=(
                 wei
-                if (isDeposit and market == consts.MARKET_WETH)
+                if (isDeposit and market == consts.MARKET_WETH and asEth)
                 else 0
             )
         )
 
-        if market == consts.MARKET_WETH:
+        if market == consts.MARKET_WETH and asEth:
             return self.eth.send_eth_transaction(
                 self.payable_proxy.functions.operate(
                     accounts,
@@ -100,7 +101,8 @@ class EthSolo(object):
     ):
         '''
         Set allowance on Solo for some token. Must be done only once per
-        market. Not necessary for WETH (market 0)
+        market. Not necessary for WETH (market 0) market. Not necessary for
+        WETH (market 0) if using the payableproxy
 
         :param market: required
         :type market: number
@@ -118,6 +120,7 @@ class EthSolo(object):
         self,
         market,
         wei
+        asEth,
     ):
         '''
         Deposit funds into the protocol
@@ -128,6 +131,9 @@ class EthSolo(object):
         :param wei: required
         :type wei: number
 
+        :param asEth: optional, defaults to True
+        :type asEth: bool
+
         :returns: transactionHash
 
         :raises: ValueError
@@ -137,14 +143,16 @@ class EthSolo(object):
             market=market,
             wei=wei,
             ref=consts.REFERENCE_DELTA,
-            otherAddress=self.public_address
+            otherAddress=self.public_address,
+            asEth=asEth
         )
 
     def withdraw(
         self,
         market,
         wei,
-        to=None
+        to=None,
+        asEth=True
     ):
         '''
         Withdraw funds from the protocol
@@ -158,6 +166,9 @@ class EthSolo(object):
         :param to: optional
         :type to: str (address)
 
+        :param asEth: optional, defaults to True
+        :type asEth: bool
+
         :returns: transactionHash
 
         :raises: ValueError
@@ -167,7 +178,8 @@ class EthSolo(object):
             market=market,
             wei=wei,
             ref=consts.REFERENCE_DELTA,
-            otherAddress=(to or self.public_address)
+	        otherAddress=(to or self.public_address),
+            asEth=asEth
         )
 
     def withdraw_to_zero(
