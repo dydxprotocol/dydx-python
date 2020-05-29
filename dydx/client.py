@@ -282,7 +282,7 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: str (ISO-8601)
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: list of existing orders
 
@@ -340,7 +340,7 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: str (ISO-8601)
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: list of existing orders
 
@@ -390,7 +390,7 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: str (ISO-8601)
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: list of processed fills
 
@@ -438,7 +438,7 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: str (ISO-8601)
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: list of existing fills
 
@@ -487,7 +487,7 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: str (ISO-8601)
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: list of existing trades
 
@@ -519,7 +519,7 @@ class Client(object):
         :type limit: number
 
         :param startingBefore: optional, defaults to now
-        :type startingBefore: str (ISO-8601)
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: list of processed trades
 
@@ -805,7 +805,7 @@ class Client(object):
         self,
         markets=None,
         limit=None,
-        offset=None,
+        startingBefore=None,
     ):
         '''
         Get historical funding rates.
@@ -816,8 +816,8 @@ class Client(object):
         :param limit: optional, defaults to 100, which is the maximum
         :type limit: number
 
-        :param offset: optional, defaults to 0
-        :type offset: number
+        :param startingBefore: optional, defaults to now
+        :type startingBefore: str date and time (ISO-8601)
 
         :returns: { [market: str]: { history: FundingRate[] } }
 
@@ -828,7 +828,7 @@ class Client(object):
             params=utils.remove_nones({
                 'markets': None if markets is None else ','.join(markets),
                 'limit': limit,
-                'offset': offset,
+                'startingBefore': startingBefore,
             }),
         )
 

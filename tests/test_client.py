@@ -732,19 +732,19 @@ class TestClient():
             )
             assert result == json_obj
 
-    def test_get_historical_funding_rates_with_limit_and_offset(self):
+    def test_get_historical_funding_rates_with_limit_and_starting_before(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = {'key': 'mock get_historical_funding response'}
             limit = 50
-            offset = 25
+            startingBefore = '2020-04-10T22:00:00.000Z'
             uri = 'https://api.dydx.exchange/v1/historical-funding-rates' \
                 + '?limit=' + str(limit) \
-                + '&offset=' + str(offset)
+                + '&startingBefore=' + str(startingBefore)
             rm.get(uri, json=json_obj)
             result = client.get_historical_funding_rates(
                 limit=limit,
-                offset=offset,
+                startingBefore=startingBefore,
             )
             assert result == json_obj
 
