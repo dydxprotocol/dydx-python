@@ -198,7 +198,7 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        return self._get('/v1/dex/pairs')
+        return self._get('/v2/markets')
 
     def get_my_balances(
         self
