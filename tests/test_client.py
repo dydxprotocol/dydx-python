@@ -157,14 +157,14 @@ class TestClient():
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
             json_obj = tests.test_json.mock_get_pairs_json
-            rm.get('https://api.dydx.exchange/v1/dex/pairs', json=json_obj)
+            rm.get('https://api.dydx.exchange/v2/markets', json=json_obj)
             result = client.get_pairs()
             assert result == json_obj
 
     def test_get_pairs_fail(self):
         client = Client(PRIVATE_KEY_1)
         with requests_mock.mock() as rm:
-            rm.get('https://api.dydx.exchange/v1/dex/pairs', status_code=400)
+            rm.get('https://api.dydx.exchange/v2/markets', status_code=400)
             with pytest.raises(Exception) as error:
                 client.get_pairs()
             assert '400' in str(error.value)
