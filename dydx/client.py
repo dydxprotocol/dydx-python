@@ -112,7 +112,7 @@ class Client(object):
             'isBuy': isBuy,
             'baseMarket': baseMarket,
             'quoteMarket': quoteMarket,
-            'amount': amount,
+            'amount': int(float(amount)),
             'limitPrice': price,
             'triggerPrice': Decimal(0),
             'limitFee': limitFee,
@@ -172,7 +172,7 @@ class Client(object):
         order = {
             'salt': random.randint(0, 2**256),
             'isBuy': isBuy,
-            'amount': amount,
+            'amount': int(float(amount)),
             'limitPrice': price,
             'triggerPrice': Decimal(0),
             'limitFee': limitFee,
