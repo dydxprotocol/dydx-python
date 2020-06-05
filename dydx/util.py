@@ -53,6 +53,14 @@ def remove_nones(original):
     return {k: v for k, v in original.items() if v is not None}
 
 
+def dict_to_query_params(param_dict):
+    if not param_dict:
+        return ''
+    return '?' + '&'.join(
+        [key + '=' + str(value) for key, value in param_dict.items()],
+    )
+
+
 def epoch_in_four_weeks():
     return int(time.time()) + consts.FOUR_WEEKS_IN_SECONDS
 
