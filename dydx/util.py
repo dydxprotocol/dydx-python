@@ -54,10 +54,11 @@ def remove_nones(original):
 
 
 def dict_to_query_params(param_dict):
-    if not param_dict:
+    values_dict = remove_nones(param_dict)
+    if not values_dict:
         return ''
     return '?' + '&'.join(
-        [key + '=' + str(value) for key, value in param_dict.items()],
+        [key + '=' + str(value) for key, value in values_dict.items()],
     )
 
 

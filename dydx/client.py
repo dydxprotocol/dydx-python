@@ -233,12 +233,10 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
             'number': number
         })
-        return self._get(
-            '/v1/accounts/' + address + utils.dict_to_query_params(params),
-        )
+        return self._get('/v1/accounts/' + address + params)
 
     def get_my_perpetual_balances(
         self
@@ -360,7 +358,7 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
             'market': None if market is None else ','.join(market),
             'side': side,
             'status': None if status is None else ','.join(status),
@@ -370,9 +368,7 @@ class Client(object):
             'limit': limit,
             'startingBefore': startingBefore
         })
-        return self._get(
-            '/v2/orders' + utils.dict_to_query_params(params),
-        )
+        return self._get('/v2/orders' + params)
 
     def get_order(
         self,
@@ -461,7 +457,7 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
             'market': None if market is None else ','.join(market),
             'side': side,
             'accountOwner': accountOwner,
@@ -470,7 +466,7 @@ class Client(object):
             'limit': limit,
             'startingBefore': startingBefore
         })
-        return self._get('/v2/fills' + utils.dict_to_query_params(params), )
+        return self._get('/v2/fills' + params)
 
     def get_trades(
         self,
@@ -511,7 +507,7 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
             'market': None if market is None else ','.join(market),
             'side': side,
             'accountOwner': accountOwner,
@@ -520,9 +516,7 @@ class Client(object):
             'limit': limit,
             'startingBefore': startingBefore,
         })
-        return self._get(
-            '/v2/trades' + utils.dict_to_query_params(params),
-        )
+        return self._get('/v2/trades' + params)
 
     def get_my_trades(
         self,
@@ -818,12 +812,10 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
             'markets': None if markets is None else ','.join(markets),
         })
-        return self._get(
-            '/v1/funding-rates' + utils.dict_to_query_params(params),
-        )
+        return self._get('/v1/funding-rates' + params)
 
     def get_historical_funding_rates(
         self,
@@ -847,14 +839,13 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
                 'markets': None if markets is None else ','.join(markets),
                 'limit': limit,
                 'startingBefore': startingBefore,
         })
         return self._get(
-            '/v1/historical-funding-rates'
-            + utils.dict_to_query_params(params),
+            '/v1/historical-funding-rates' + params,
         )
 
     def get_funding_index_price(
@@ -871,9 +862,7 @@ class Client(object):
 
         :raises: DydxAPIError
         '''
-        params = utils.remove_nones({
+        params = utils.dict_to_query_params({
             'markets': None if markets is None else ','.join(markets),
         })
-        return self._get(
-            '/v1/index-price' + utils.dict_to_query_params(params),
-        )
+        return self._get('/v1/index-price' + params)
