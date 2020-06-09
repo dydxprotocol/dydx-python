@@ -22,7 +22,8 @@ CANCEL_ORDER_SIGNATURE = '0xe760368bbdb904809d2383606e27b9ab8ed57f47ce37dc67d4f8
 PERP_ORDER_HASH = '0x581a3e51afe0e0842ed4964a23d961cdf421999460860f1ab1a5a85d59bf9144'  # noqa: E501
 CANCEL_PERP_ORDER_SIGNATURE = '0x12ac3ffc41c59b5bfcb9fe440db74a533eacefcb09a7a5c4f41735ed9e8d1b4f4368984ef254bbe1c672d0b89226d21126d58dcc38e83ae3a2fdf22e4d7f89021b01'  # noqa: E501
 
-MARKETS = ['WETH-DAI', 'DAI-WETH']
+MARKETS = ['WETH-DAI']
+STATUS = ['PENDING']
 PERPETUAL_MARKETS = ['PBTC-USDC']
 LOCAL_NODE = 'http://0.0.0.0:8545'
 
@@ -291,11 +292,13 @@ class TestClient():
                 + '?accountOwner=' + client.public_address \
                 + '&accountNumber=' + str(client.account_number) \
                 + '&market=' + ','.join(MARKETS) \
+                + '&status=' + ','.join(STATUS) \
                 + '&limit=' + str(limit) \
                 + '&startingBefore=' + startingBefore
             rm.get(uri, json=json_obj)
             result = client.get_my_orders(
                 market=MARKETS,
+                status=STATUS,
                 limit=limit,
                 startingBefore=startingBefore
             )
