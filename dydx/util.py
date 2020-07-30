@@ -95,6 +95,8 @@ def pair_to_base_quote_markets(pair):
         return (consts.MARKET_DAI, consts.MARKET_USDC)
     elif pair == consts.PAIR_PBTC_USDC:
         return (consts.MARKET_PBTC, consts.MARKET_USDC)
+    elif pair == consts.PAIR_WETH_PUSD:
+        return (consts.MARKET_PUSD, consts.MARKET_WETH)
     raise ValueError('Invalid pair')
 
 
@@ -107,27 +109,7 @@ def get_is_buy(side):
 
 
 def get_limit_fee(base_market, amount):
-    if base_market == consts.MARKET_WETH:
-        if (amount < consts.SMALL_TRADE_SIZE_WETH):
-            return consts.FEE_SMALL_WETH
-        else:
-            return consts.FEE_LARGE_WETH
-    elif base_market == consts.MARKET_DAI:
-        if (amount < consts.SMALL_TRADE_SIZE_DAI):
-            return consts.FEE_SMALL_DAI
-        else:
-            return consts.FEE_LARGE_DAI
-    elif base_market == consts.MARKET_PBTC:
-        if (amount < consts.SMALL_TRADE_SIZE_PBTC):
-            return consts.FEE_SMALL_PBTC
-        else:
-            return consts.FEE_LARGE_PBTC
-    elif base_market == consts.MARKET_PUSD:
-        if (amount < consts.SMALL_TRADE_SIZE_PUSD):
-            return consts.FEE_SMALL_WETH_PUSD
-        else:
-            return consts.FEE_LARGE_WETH_PUSD
-    raise ValueError('Invalid base_market')
+    return consts.LIMIT_FEE
 
 
 def decimalToStr(d):
