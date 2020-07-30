@@ -105,7 +105,7 @@ class Client(object):
         baseMarket, quoteMarket = utils.pair_to_base_quote_markets(market)
         isBuy = utils.get_is_buy(side)
         if limitFee is None:
-            limitFee = utils.get_limit_fee(baseMarket, amount, postOnly)
+            limitFee = utils.get_limit_fee(baseMarket, amount)
 
         order = {
             'salt': random.randint(0, 2**256),
@@ -167,7 +167,7 @@ class Client(object):
         baseMarket, _ = utils.pair_to_base_quote_markets(market)
         isBuy = utils.get_is_buy(side)
         if limitFee is None:
-            limitFee = utils.get_limit_fee(baseMarket, amount, postOnly)
+            limitFee = utils.get_limit_fee(baseMarket, amount)
 
         order = {
             'salt': random.randint(0, 2**256),
