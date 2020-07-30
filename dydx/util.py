@@ -106,15 +106,7 @@ def get_is_buy(side):
     raise ValueError('Invalid side')
 
 
-def get_limit_fee(base_market, amount, postOnly):
-    if postOnly:
-        if base_market == consts.MARKET_PBTC:
-            if (amount < consts.SMALL_TRADE_SIZE_PBTC):
-                return consts.FEE_ZERO
-            else:
-                return consts.FEE_MAKER_PBTC
-        else:
-            return consts.FEE_ZERO
+def get_limit_fee(base_market, amount):
     if base_market == consts.MARKET_WETH:
         if (amount < consts.SMALL_TRADE_SIZE_WETH):
             return consts.FEE_SMALL_WETH
@@ -130,6 +122,11 @@ def get_limit_fee(base_market, amount, postOnly):
             return consts.FEE_SMALL_PBTC
         else:
             return consts.FEE_LARGE_PBTC
+    elif base_market == consts.MARKET_PUSD:
+        if (amount < consts.SMALL_TRADE_SIZE_PUSD):
+            return consts.FEE_SMALL_WETH_PUSD
+        else:
+            return consts.FEE_LARGE_WETH_PUSD
     raise ValueError('Invalid base_market')
 
 
