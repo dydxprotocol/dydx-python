@@ -465,15 +465,12 @@ markets = {
 '''
 ```
 
-### Perpetual
+### Perpetuals
 
 #### Deposit / Withdraw
 
 ```python
 # deposit 2 ETH into the ETH-USD Perpetual
-tx_hash = client.eth.perp.set_allowance(consts.PAIR_WETH_PUSD) # must only be called once, ever
-receipt = client.eth.get_receipt(tx_hash)
-
 tx_hash = client.eth.perp.deposit(
   market=consts.PAIR_WETH_PUSD,
   amount=utils.token_to_wei(2, consts.MARKET_WETH)

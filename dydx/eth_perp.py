@@ -51,6 +51,11 @@ class EthPerp(object):
 
         :raises: ValueError
         '''
+        if market == consts.PAIR_WETH_PUSD:
+            return self.eth.set_allowance(
+                consts.MARKET_WETH,
+                consts.ETH_PERPETUAL_ADDRESS,
+            )
         if market == consts.PAIR_PBTC_USDC:
             return self.eth.set_allowance(
                 consts.MARKET_USDC,
