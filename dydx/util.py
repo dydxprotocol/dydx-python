@@ -86,6 +86,10 @@ def btc_to_sats(amount):
     return amount * (10 ** consts.DECIMALS_PBTC)
 
 
+def usd_to_order_amount(amount):
+    return amount * (10 ** consts.DECIMALS_USDC)
+
+
 def pair_to_base_quote_markets(pair):
     if pair == consts.PAIR_WETH_DAI:
         return (consts.MARKET_WETH, consts.MARKET_DAI)
@@ -104,33 +108,6 @@ def get_is_buy(side):
     elif side == consts.SIDE_SELL:
         return False
     raise ValueError('Invalid side')
-
-
-def get_limit_fee(base_market, amount, postOnly):
-    if postOnly:
-        if base_market == consts.MARKET_PBTC:
-            if (amount < consts.SMALL_TRADE_SIZE_PBTC):
-                return consts.FEE_ZERO
-            else:
-                return consts.FEE_MAKER_PBTC
-        else:
-            return consts.FEE_ZERO
-    if base_market == consts.MARKET_WETH:
-        if (amount < consts.SMALL_TRADE_SIZE_WETH):
-            return consts.FEE_SMALL_WETH
-        else:
-            return consts.FEE_LARGE_WETH
-    elif base_market == consts.MARKET_DAI:
-        if (amount < consts.SMALL_TRADE_SIZE_DAI):
-            return consts.FEE_SMALL_DAI
-        else:
-            return consts.FEE_LARGE_DAI
-    elif base_market == consts.MARKET_PBTC:
-        if (amount < consts.SMALL_TRADE_SIZE_PBTC):
-            return consts.FEE_SMALL_PBTC
-        else:
-            return consts.FEE_LARGE_PBTC
-    raise ValueError('Invalid base_market')
 
 
 def decimalToStr(d):

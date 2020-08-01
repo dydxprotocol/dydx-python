@@ -1,4 +1,5 @@
 import dydx.perp_orders as perp_orders
+import dydx.constants as consts
 from decimal import Decimal
 
 PRIVATE_KEY_1 = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # noqa: E501
@@ -27,7 +28,7 @@ CANCEL_ORDER_SIGNATURE = '0x12ac3ffc41c59b5bfcb9fe440db74a533eacefcb09a7a5c4f417
 class TestPerpOrders():
 
     def test_perp_orders_get_order_hash(self):
-        hash = perp_orders.get_order_hash(ORDER)
+        hash = perp_orders.get_order_hash(ORDER, consts.PAIR_PBTC_USDC)
         assert hash == ORDER_HASH
 
     def test_perp_orders_get_cancel_order_hash(self):
@@ -37,6 +38,7 @@ class TestPerpOrders():
     def test_perp_orders_sign_order(self):
         signature = perp_orders.sign_order(
             order=ORDER,
+            pair=consts.PAIR_PBTC_USDC,
             private_key=PRIVATE_KEY_1
         )
         assert signature == ORDER_SIGNATURE

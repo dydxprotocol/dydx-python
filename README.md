@@ -202,6 +202,17 @@ trades = {
 #### Create an Order (Perp)
 
 ```python
+# Create order to LONG ETH with an order quantity of 2,500 ETH-USD contracts
+# at a price of 250 USD per ETH.
+created_order = client.place_order(
+    market=consts.PAIR_WETH_PUSD,
+    side=consts.SIDE_SELL,
+    amount=utils.usd_to_order_amount(25000),
+    price=Decimal('250e-12'),
+    fillOrKill=False,
+    postOnly=False
+)
+
 # Create order to BUY 10 PBTC for 723,400.00 USDC (a price of 7234.00 PBTC/USDC)
 created_order = client.place_order(
     market=consts.PAIR_PBTC_USDC,
@@ -454,23 +465,45 @@ markets = {
 '''
 ```
 
-### Perpetual (BTC Trading)
+### Perpetual
 
 #### Deposit / Withdraw
 
 ```python
-# deposit 100 USDC
-tx_hash = client.eth.perp.set_allowance() # must only be called once, ever
+# deposit 2 ETH into the ETH-USD Perpetual
+tx_hash = client.eth.perp.set_allowance(consts.PAIR_WETH_PUSD) # must only be called once, ever
 receipt = client.eth.get_receipt(tx_hash)
 
 tx_hash = client.eth.perp.deposit(
+  market=consts.PAIR_WETH_PUSD,
+  amount=utils.token_to_wei(2, consts.MARKET_WETH)
+)
+receipt = client.eth.get_receipt(tx_hash)
+
+
+# withdraw 1 ETH from the ETH-USD Perpetual
+tx_hash = client.eth.perp.withdraw(
+  market=consts.PAIR_WETH_PUSD,
+  amount=utils.token_to_wei(1, consts.MARKET_WETH)
+)
+receipt = client.eth.get_receipt(tx_hash)
+```
+
+```python
+# deposit 100 USDC into the BTC-USD Perpetual
+tx_hash = client.eth.perp.set_allowance(consts.PAIR_PBTC_USDC) # must only be called once, ever
+receipt = client.eth.get_receipt(tx_hash)
+
+tx_hash = client.eth.perp.deposit(
+  market=consts.PAIR_PBTC_USDC,
   amount=utils.token_to_wei(100, consts.MARKET_USDC)
 )
 receipt = client.eth.get_receipt(tx_hash)
 
 
-# withdraw 50 USDC
+# withdraw 50 USDC from the BTC-USD Perpetual
 tx_hash = client.eth.perp.withdraw(
+  market=consts.PAIR_PBTC_USDC,
   amount=utils.token_to_wei(50, consts.MARKET_USDC)
 )
 receipt = client.eth.get_receipt(tx_hash)
@@ -482,7 +515,16 @@ receipt = client.eth.get_receipt(tx_hash)
 # get the USD value of PBTC
 # Since PBTC is measured in Satoshis (1e-8 of one BTC) and USDC has 6 decimal places,
 # a normal price of $7200 per BTC would return a result of 72.
-dai_price = client.eth.perp.get_oracle_price()
+btc_price = client.eth.perp.get_oracle_price(
+  market=consts.PAIR_PBTC_USDC
+)
+
+# get the ETH value of USD
+# Since USD is considered to have 6 decimal places, and ETH has 18 decimals places,
+# a normal price of $250 per ETH would have a price of 1 / (250e-12).
+eth_price = client.eth.perp.get_oracle_price(
+  market=consts.PAIR_WETH_PUSD
+)
 ```
 
 ### Solo (ETH trading)
