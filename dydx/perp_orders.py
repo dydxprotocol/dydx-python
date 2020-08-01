@@ -31,7 +31,18 @@ EIP712_CANCEL_ORDER_STRUCT_STRING = \
 EIP712_CANCEL_ACTION = 'Cancel Orders'
 
 
-def get_domain_hash():
+def get_domain_hash(pair):
+    contract_name = ''
+    contract_address = ''
+    if pair == consts.PAIR_PBTC_USDC:
+        contract_name = 'P1Orders'
+        contract_address = consts.BTC_P1_ORDERS_ADDRESS
+    elif pair == consts.PAIR_WETH_PUSD:
+        contract_name = 'P1InverseOrders'
+        contract_address = consts.ETH_P1_ORDERS_ADDRESS
+    else:
+        raise ValueError('Invalid perpetual pair')
+
     return Web3.solidityKeccak(
         [
             'bytes32',
@@ -42,15 +53,15 @@ def get_domain_hash():
         ],
         [
             utils.hash_string(EIP712_DOMAIN_STRING),
-            utils.hash_string('P1Orders'),
+            utils.hash_string(contract_name),
             utils.hash_string('1.0'),
             consts.NETWORK_ID,
-            utils.address_to_bytes32(consts.P1_ORDERS_ADDRESS)
+            utils.address_to_bytes32(contract_address)
         ]
     ).hex()
 
 
-def get_order_hash(order):
+def get_order_hash(order, pair):
     '''
     Returns the final signable EIP712 hash for an order.
     '''
@@ -79,7 +90,7 @@ def get_order_hash(order):
             int(order['expiration'])
         ]
     ).hex()
-    return utils.get_eip712_hash(get_domain_hash(), struct_hash)
+    return utils.get_eip712_hash(get_domain_hash(pair), struct_hash)
 
 
 def get_cancel_order_hash(order_hash):
@@ -106,11 +117,13 @@ def get_cancel_order_hash(order_hash):
             orders_hash,
         ]
     ).hex()
-    return utils.get_eip712_hash(get_domain_hash(), struct_hash)
+    return utils.get_eip712_hash(get_domain_hash(
+        consts.PAIR_PBTC_USDC,  # Use BTC Market. Orderbook should accept it.
+    ), struct_hash)
 
 
-def sign_order(order, private_key):
-    order_hash = get_order_hash(order)
+def sign_order(order, pair, private_key):
+    order_hash = get_order_hash(order, pair)
     return utils.sign_hash(order_hash, private_key)
 
 

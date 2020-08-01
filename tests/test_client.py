@@ -94,7 +94,7 @@ def _create_perp_order_matcher(client, args):
         assert order['amount'] == str(args['amount'])
         assert order['limitPrice'] == str(args['limitPrice'])
         assert order['triggerPrice'] == '0'
-        assert order['limitFee'] == '0.00075'
+        assert order['limitFee'] == '0.01'
         assert order['maker'] == client.public_address
         assert order['taker'] == consts.TAKER_ACCOUNT_OWNER
         assert abs(
@@ -112,7 +112,7 @@ def _create_perp_order_matcher(client, args):
             'taker': order['taker'],
             'expiration': int(order['expiration']),
             'salt': int(order['salt'])
-        }, client.private_key)
+        }, consts.PAIR_PBTC_USDC, client.private_key)
         assert body['order']['typedSignature'] == expected_signature
         return True
 

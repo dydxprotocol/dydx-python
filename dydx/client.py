@@ -105,7 +105,7 @@ class Client(object):
         baseMarket, quoteMarket = utils.pair_to_base_quote_markets(market)
         isBuy = utils.get_is_buy(side)
         if limitFee is None:
-            limitFee = utils.get_limit_fee(baseMarket, amount, postOnly)
+            limitFee = consts.DEFAULT_LIMIT_FEE
 
         order = {
             'salt': random.randint(0, 2**256),
@@ -139,7 +139,7 @@ class Client(object):
 
         :param market: required
         :type market: str in list
-            ["PBTC-USDC"]
+            ["PBTC-USDC", "WETH-PUSD"]
 
         :param side: required
         :type side: str in list ["BUY", "SELL"]
@@ -164,10 +164,9 @@ class Client(object):
         :raises: DydxAPIError
         '''
 
-        baseMarket, _ = utils.pair_to_base_quote_markets(market)
         isBuy = utils.get_is_buy(side)
         if limitFee is None:
-            limitFee = utils.get_limit_fee(baseMarket, amount, postOnly)
+            limitFee = consts.DEFAULT_LIMIT_FEE
 
         order = {
             'salt': random.randint(0, 2**256),
@@ -181,7 +180,7 @@ class Client(object):
             'expiration': expiration or utils.epoch_in_four_weeks(),
         }
         order['typedSignature'] = \
-            perp_orders.sign_order(order, self.private_key)
+            perp_orders.sign_order(order, market, self.private_key)
         return order
 
     # -----------------------------------------------------------
@@ -278,7 +277,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -324,7 +323,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -397,7 +396,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -433,7 +432,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -483,7 +482,7 @@ class Client(object):
 
         :param market: optional
         :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC"]
+            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -567,7 +566,7 @@ class Client(object):
 
         :param market: required
         :type market: str in list
-            ["WETH-DAI", "WETH-USDC", "DAI-USDC", "PBTC-USDC"]
+            ["WETH-DAI", "WETH-USDC", "DAI-USDC", "PBTC-USDC", "WETH_PUSD"]
 
         :param side: required
         :type side: str in list ["BUY", "SELL"]
@@ -604,7 +603,7 @@ class Client(object):
         :raises: DydxAPIError
         '''
 
-        if market == consts.PAIR_PBTC_USDC:
+        if market in [consts.PAIR_PBTC_USDC, consts.PAIR_WETH_PUSD]:
 
             order = self._make_perp_order(
                 market,
@@ -766,7 +765,7 @@ class Client(object):
         Get market from market pair
 
         :param market: required
-        :type market: str in list ["PBTC-USDC"]
+        :type market: str in list ["PBTC-USDC", "WETH_PUSD"]
 
         :returns: { market: PerpetualMarket }
 
@@ -804,7 +803,7 @@ class Client(object):
         premiums have been calculated since the last funding rate update.
 
         :param markets: optional, defaults to all Perpetual markets
-        :type markets: str in list ["PBTC-USDC"]
+        :type markets: str in list ["PBTC-USDC", "WETH_PUSD"]
 
         :returns: {
             [market: str]: { current: FundingRate, predicted: FundingRate }
@@ -827,7 +826,7 @@ class Client(object):
         Get historical funding rates.
 
         :param markets: optional, defaults to all Perpetual markets
-        :type markets: str in list ["PBTC-USDC"]
+        :type markets: str in list ["PBTC-USDC", "WETH_PUSD"]
 
         :param limit: optional, defaults to 100, which is the maximum
         :type limit: number
@@ -856,7 +855,7 @@ class Client(object):
         Get the index price used in the funding rate calculation.
 
         :param markets: optional, defaults to all Perpetual markets
-        :type markets: str in list ["PBTC-USDC"]
+        :type markets: str in list ["PBTC-USDC", "WETH_PUSD"]
 
         :returns: { [market: str]: { price: str } }
 

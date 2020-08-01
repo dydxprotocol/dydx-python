@@ -12,21 +12,37 @@ class EthPerp(object):
         self.public_address = public_address
 
         # initialize contracts
-        self.perpetual = self.eth.create_contract(
-            consts.PERPETUAL_ADDRESS,
+        self.btc_perpetual = self.eth.create_contract(
+            consts.BTC_PERPETUAL_ADDRESS,
             'abi/perpetualv1.json'
         )
-        self.oracle = self.eth.create_contract(
-            None,  # address to be set later
-            'abi/p1oracle.json'
+        self.eth_perpetual = self.eth.create_contract(
+            consts.ETH_PERPETUAL_ADDRESS,
+            'abi/perpetualv1.json'
         )
+        self.weth_proxy = self.eth.create_contract(
+            consts.WETH_PROXY_ADDRESS,
+            'abi/wethproxy.json'
+        )
+
+    def _get_perpetual_by_market(
+        self,
+        market
+    ):
+        if market == consts.PAIR_PBTC_USDC:
+            return self.btc_perpetual
+        elif market == consts.PAIR_WETH_PUSD:
+            return self.eth_perpetual
+        else:
+            raise ValueError('Invalid market')
 
     # -----------------------------------------------------------
     # Transactions
     # -----------------------------------------------------------
 
     def set_allowance(
-        self
+        self,
+        market
     ):
         '''
         Set allowance on the Perpetual for some token. Must be done only once.
@@ -35,13 +51,20 @@ class EthPerp(object):
 
         :raises: ValueError
         '''
-        return self.eth.set_allowance(
-            consts.MARKET_USDC,
-            consts.PERPETUAL_ADDRESS,
-        )
+        if market == consts.PAIR_WETH_PUSD:
+            return self.eth.set_allowance(
+                consts.MARKET_WETH,
+                consts.ETH_PERPETUAL_ADDRESS,
+            )
+        if market == consts.PAIR_PBTC_USDC:
+            return self.eth.set_allowance(
+                consts.MARKET_USDC,
+                consts.BTC_PERPETUAL_ADDRESS,
+            )
 
     def deposit(
         self,
+        market,
         amount
     ):
         '''
@@ -54,15 +77,27 @@ class EthPerp(object):
 
         :raises: ValueError
         '''
-        return self.eth.send_eth_transaction(
-            method=self.perpetual.functions.deposit(
-                self.public_address,
-                amount
+
+        if market == consts.PAIR_WETH_PUSD:
+            return self.eth.send_eth_transaction(
+                method=self.weth_proxy.functions.depositEth(
+                    consts.ETH_PERPETUAL_ADDRESS,
+                    self.public_address
+                ),
+                options={'value': amount}
             )
-        )
+        else:
+            perpetual = self._get_perpetual_by_market(market)
+            return self.eth.send_eth_transaction(
+                method=perpetual.functions.deposit(
+                    self.public_address,
+                    amount
+                )
+            )
 
     def withdraw(
         self,
+        market,
         amount,
         to=None
     ):
@@ -80,46 +115,59 @@ class EthPerp(object):
         :raises: ValueError
         '''
         destination = to or self.public_address
-        return self.eth.send_eth_transaction(
-            method=self.perpetual.functions.withdraw(
-                self.public_address,
-                destination,
-                amount
+
+        if market == consts.PAIR_WETH_PUSD:
+            return self.eth.send_eth_transaction(
+                method=self.weth_proxy.functions.withdrawEth(
+                    consts.ETH_PERPETUAL_ADDRESS,
+                    self.public_address,
+                    destination,
+                    amount
+                )
             )
-        )
+        else:
+            perpetual = self._get_perpetual_by_market(market)
+            return self.eth.send_eth_transaction(
+                method=perpetual.functions.withdraw(
+                    self.public_address,
+                    destination,
+                    amount
+                )
+            )
 
     # -----------------------------------------------------------
     # Getters
     # -----------------------------------------------------------
 
     def get_oracle_price(
-        self
+        self,
+        market
     ):
         '''
         Gets the on-chain price of an asset from the price oracle.
 
         :returns: number
         '''
-        if self.oracle.address is None:
-            self.oracle.address = \
-                self.perpetual.functions.getOracleContract().call()
-        price = self.oracle.functions.getPrice().call(
-            {'from': consts.PERPETUAL_ADDRESS}
+        perpetual = self._get_perpetual_by_market(market)
+        price = perpetual.functions.getOraclePrice().call(
+            {'from': consts.CURRENCY_CONVERTER_PROXY_ADDRESS}
         )
         return price / (10 ** 18)
 
     def get_my_balances(
-        self
+        self,
+        market
     ):
         '''
         Gets dYdX balances for my account.
 
         :returns: Object { margin: number, position, number }
         '''
-        return self.get_balances(self.public_address)
+        return self.get_balances(market, self.public_address)
 
     def get_balances(
         self,
+        market,
         address
     ):
         '''
@@ -133,7 +181,8 @@ class EthPerp(object):
 
         :returns: Object { margin: number, position, number }
         '''
-        result = self.perpetual.functions.getAccountBalance(address).call()
+        perpetual = self._get_perpetual_by_market(market)
+        result = perpetual.functions.getAccountBalance(address).call()
         (marginIsPositive, positionIsPositive, margin, position) = result
         return {
             'margin': margin if marginIsPositive else -margin,

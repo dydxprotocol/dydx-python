@@ -185,7 +185,7 @@ class TestEth():
 
     def test_eth_perp_set_allowance_eth_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
-        tx_hash = client.eth.perp.set_allowance()
+        tx_hash = client.eth.perp.set_allowance(consts.PAIR_PBTC_USDC)
         self._validate_tx_hash(client, tx_hash)
 
     # ------------ deposit ------------
@@ -193,7 +193,13 @@ class TestEth():
     def test_eth_perp_deposit_dai_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.eth.perp.deposit(
-            amount=1000
+            market=consts.PAIR_PBTC_USDC,
+            amount=1000,
+        )
+        self._validate_tx_hash(client, tx_hash)
+        tx_hash = client.eth.perp.deposit(
+            market=consts.PAIR_WETH_PUSD,
+            amount=1000,
         )
         self._validate_tx_hash(client, tx_hash)
 
@@ -202,13 +208,26 @@ class TestEth():
     def test_eth_perp_withdraw_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.eth.perp.withdraw(
-            amount=1000
+            market=consts.PAIR_PBTC_USDC,
+            amount=1000,
+        )
+        self._validate_tx_hash(client, tx_hash)
+        tx_hash = client.eth.perp.withdraw(
+            market=consts.PAIR_WETH_PUSD,
+            amount=1000,
         )
         self._validate_tx_hash(client, tx_hash)
 
     def test_eth_perp_withdraw_to_success(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         tx_hash = client.eth.perp.withdraw(
+            market=consts.PAIR_PBTC_USDC,
+            amount=1000,
+            to=ADDRESS_2
+        )
+        self._validate_tx_hash(client, tx_hash)
+        tx_hash = client.eth.perp.withdraw(
+            market=consts.PAIR_WETH_PUSD,
             amount=1000,
             to=ADDRESS_2
         )
@@ -309,7 +328,9 @@ class TestEth():
     def test_eth_perp_get_oracle_price(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(web3.exceptions.BadFunctionCallOutput) as error:
-            client.eth.perp.get_oracle_price()
+            client.eth.perp.get_oracle_price(
+                market=consts.PAIR_PBTC_USDC,
+            )
         assert CONTRACT_NOT_FOUND_ERROR in str(error.value)
 
     # ------------ perp.get_my_balances ------------
@@ -317,7 +338,9 @@ class TestEth():
     def test_eth_perp_get_my_balances(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(web3.exceptions.BadFunctionCallOutput) as error:
-            client.eth.perp.get_my_balances()
+            client.eth.perp.get_my_balances(
+                market=consts.PAIR_PBTC_USDC,
+            )
         assert CONTRACT_NOT_FOUND_ERROR in str(error.value)
 
     # ------------ perp.get_my_balances ------------
@@ -325,5 +348,8 @@ class TestEth():
     def test_eth_perp_get_balances(self):
         client = Client(PRIVATE_KEY_1, node=LOCAL_NODE)
         with pytest.raises(web3.exceptions.BadFunctionCallOutput) as error:
-            client.eth.perp.get_balances(address=ADDRESS_2)
+            client.eth.perp.get_balances(
+                market=consts.PAIR_PBTC_USDC,
+                address=ADDRESS_2,
+            )
         assert CONTRACT_NOT_FOUND_ERROR in str(error.value)
