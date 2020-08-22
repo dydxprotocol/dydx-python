@@ -138,8 +138,11 @@ class Client(object):
         Make an order object
 
         :param market: required
-        :type market: str in list
-            ["PBTC-USDC", "WETH-PUSD"]
+        :type market: str in list [
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param side: required
         :type side: str in list ["BUY", "SELL"]
@@ -276,8 +279,14 @@ class Client(object):
         Return open orders for the loaded account
 
         :param market: optional
-        :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
+        :type market: str[] of valid markets [
+            "WETH-DAI",
+            "DAI-USDC",
+            "WETH-USDC",
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -322,8 +331,14 @@ class Client(object):
         Returns all open orders
 
         :param market: optional
-        :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
+        :type market: str[] of valid markets [
+            "WETH-DAI",
+            "DAI-USDC",
+            "WETH-USDC",
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -395,8 +410,14 @@ class Client(object):
         Return historical fills for the loaded account
 
         :param market: optional
-        :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
+        :type market: str[] of valid markets [
+            "WETH-DAI",
+            "DAI-USDC",
+            "WETH-USDC",
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param limit: optional, defaults to 100
         :type limit: number
@@ -431,8 +452,14 @@ class Client(object):
         Returns all historical fills
 
         :param market: optional
-        :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
+        :type market: str[] of valid markets [
+            "WETH-DAI",
+            "DAI-USDC",
+            "WETH-USDC",
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -481,8 +508,14 @@ class Client(object):
         Returns all historical trades
 
         :param market: optional
-        :type market: str[] of valid markets
-            ["WETH-DAI", "DAI-USDC", "WETH-USDC", "PBTC-USDC", "WETH_PUSD"]
+        :type market: str[] of valid markets [
+            "WETH-DAI",
+            "DAI-USDC",
+            "WETH-USDC",
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param side: optional
         :type side: str in list ["BUY", "SELL"]
@@ -565,8 +598,14 @@ class Client(object):
         Create an order
 
         :param market: required
-        :type market: str in list
-            ["WETH-DAI", "WETH-USDC", "DAI-USDC", "PBTC-USDC", "WETH_PUSD"]
+        :type market: str in list [
+            "WETH-DAI",
+            "WETH-USDC",
+            "DAI-USDC",
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param side: required
         :type side: str in list ["BUY", "SELL"]
@@ -603,7 +642,11 @@ class Client(object):
         :raises: DydxAPIError
         '''
 
-        if market in [consts.PAIR_PBTC_USDC, consts.PAIR_WETH_PUSD]:
+        if market in [
+            consts.PAIR_PBTC_USDC,
+            consts.PAIR_PLINK_USDC,
+            consts.PAIR_WETH_PUSD,
+        ]:
 
             order = self._make_perp_order(
                 market,
@@ -765,7 +808,11 @@ class Client(object):
         Get market from market pair
 
         :param market: required
-        :type market: str in list ["PBTC-USDC", "WETH_PUSD"]
+        :type market: str in list [
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :returns: { market: PerpetualMarket }
 
@@ -803,7 +850,11 @@ class Client(object):
         premiums have been calculated since the last funding rate update.
 
         :param markets: optional, defaults to all Perpetual markets
-        :type markets: str in list ["PBTC-USDC", "WETH_PUSD"]
+        :type markets: str in list [
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :returns: {
             [market: str]: { current: FundingRate, predicted: FundingRate }
@@ -826,7 +877,11 @@ class Client(object):
         Get historical funding rates.
 
         :param markets: optional, defaults to all Perpetual markets
-        :type markets: str in list ["PBTC-USDC", "WETH_PUSD"]
+        :type markets: str in list [
+            "PBTC-USDC",
+            "PLINK-USDC",
+            "WETH-PUSD",
+        ]
 
         :param limit: optional, defaults to 100, which is the maximum
         :type limit: number
@@ -855,7 +910,11 @@ class Client(object):
         Get the index price used in the funding rate calculation.
 
         :param markets: optional, defaults to all Perpetual markets
-        :type markets: str in list ["PBTC-USDC", "WETH_PUSD"]
+        :type markets: str in list [
+            "PBTC-USDC",
+            "PLINK_USDC",
+            "WETH-PUSD",
+        ]
 
         :returns: { [market: str]: { price: str } }
 

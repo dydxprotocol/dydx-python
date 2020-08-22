@@ -75,8 +75,6 @@ def token_to_wei(amount, market):
         decimals = consts.DECIMALS_USDC
     elif market == consts.MARKET_DAI:
         decimals = consts.DECIMALS_DAI
-    elif market == consts.MARKET_PBTC:
-        decimals = consts.DECIMALS_PBTC
     else:
         raise ValueError('Invalid market')
     return int(amount * (10 ** decimals))
@@ -90,6 +88,10 @@ def usd_to_order_amount(amount):
     return amount * (10 ** consts.DECIMALS_USDC)
 
 
+def link_to_order_amount(amount):
+    return amount * (10 ** consts.DECIMALS_PLINK)
+
+
 def pair_to_base_quote_markets(pair):
     if pair == consts.PAIR_WETH_DAI:
         return (consts.MARKET_WETH, consts.MARKET_DAI)
@@ -99,6 +101,10 @@ def pair_to_base_quote_markets(pair):
         return (consts.MARKET_DAI, consts.MARKET_USDC)
     elif pair == consts.PAIR_PBTC_USDC:
         return (consts.MARKET_PBTC, consts.MARKET_USDC)
+    elif pair == consts.PAIR_WETH_PUSD:
+        return (consts.MARKET_WETH, consts.MARKET_PUSD)
+    elif pair == consts.PAIR_PLINK_USDC:
+        return (consts.MARKET_PLINK, consts.MARKET_USDC)
     raise ValueError('Invalid pair')
 
 

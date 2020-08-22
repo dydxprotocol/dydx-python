@@ -62,5 +62,3 @@ class TestUtil():
             22 * (10 ** 18)
         assert utils.token_to_wei(33, consts.MARKET_USDC) == \
             33 * (10 ** 6)
-        assert utils.token_to_wei(44, consts.MARKET_PBTC) == \
-            44 * (10 ** 8)

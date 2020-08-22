@@ -37,6 +37,9 @@ def get_domain_hash(pair):
     if pair == consts.PAIR_PBTC_USDC:
         contract_name = 'P1Orders'
         contract_address = consts.BTC_P1_ORDERS_ADDRESS
+    elif pair == consts.PAIR_PLINK_USDC:
+        contract_name = 'P1Orders'
+        contract_address = consts.LINK_P1_ORDERS_ADDRESS
     elif pair == consts.PAIR_WETH_PUSD:
         contract_name = 'P1InverseOrders'
         contract_address = consts.ETH_P1_ORDERS_ADDRESS
