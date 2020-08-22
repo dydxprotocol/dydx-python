@@ -16,6 +16,10 @@ class EthPerp(object):
             consts.BTC_PERPETUAL_ADDRESS,
             'abi/perpetualv1.json'
         )
+        self.link_perpetual = self.eth.create_contract(
+            consts.LINK_PERPETUAL_ADDRESS,
+            'abi/perpetualv1.json'
+        )
         self.eth_perpetual = self.eth.create_contract(
             consts.ETH_PERPETUAL_ADDRESS,
             'abi/perpetualv1.json'
@@ -31,6 +35,8 @@ class EthPerp(object):
     ):
         if market == consts.PAIR_PBTC_USDC:
             return self.btc_perpetual
+        elif market == consts.PAIR_PLINK_USDC:
+            return self.link_perpetual
         elif market == consts.PAIR_WETH_PUSD:
             return self.eth_perpetual
         else:
@@ -51,15 +57,20 @@ class EthPerp(object):
 
         :raises: ValueError
         '''
-        if market == consts.PAIR_WETH_PUSD:
-            return self.eth.set_allowance(
-                consts.MARKET_WETH,
-                consts.ETH_PERPETUAL_ADDRESS,
-            )
         if market == consts.PAIR_PBTC_USDC:
             return self.eth.set_allowance(
                 consts.MARKET_USDC,
                 consts.BTC_PERPETUAL_ADDRESS,
+            )
+        if market == consts.PAIR_PLINK_USDC:
+            return self.eth.set_allowance(
+                consts.MARKET_USDC,
+                consts.LINK_PERPETUAL_ADDRESS,
+            )
+        if market == consts.PAIR_WETH_PUSD:
+            return self.eth.set_allowance(
+                consts.MARKET_WETH,
+                consts.ETH_PERPETUAL_ADDRESS,
             )
 
     def deposit(

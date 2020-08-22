@@ -222,6 +222,16 @@ created_order = client.place_order(
     fillOrKill=False,
     postOnly=False
 )
+
+# Create order to BUY 100 PLINK for 1,500.00 USDC (a price of 15.00 PLINK/USDC)
+created_order = client.place_order(
+    market=consts.PAIR_PLINK_USDC,
+    side=consts.SIDE_BUY,
+    amount=utils.link_to_order_amount(100),
+    price=Decimal('15.00'),
+    fillOrKill=False,
+    postOnly=False
+)
 ```
 
 #### Create an Order (Solo)
@@ -506,6 +516,26 @@ tx_hash = client.eth.perp.withdraw(
 receipt = client.eth.get_receipt(tx_hash)
 ```
 
+```python
+# deposit 100 USDC into the LINK-USD Perpetual
+tx_hash = client.eth.perp.set_allowance(consts.PAIR_PLINK_USDC) # must only be called once, ever
+receipt = client.eth.get_receipt(tx_hash)
+
+tx_hash = client.eth.perp.deposit(
+  market=consts.PAIR_PLINK_USDC,
+  amount=utils.token_to_wei(100, consts.MARKET_USDC)
+)
+receipt = client.eth.get_receipt(tx_hash)
+
+
+# withdraw 50 USDC from the LINK-USD Perpetual
+tx_hash = client.eth.perp.withdraw(
+  market=consts.PAIR_PLINK_USDC,
+  amount=utils.token_to_wei(50, consts.MARKET_USDC)
+)
+receipt = client.eth.get_receipt(tx_hash)
+```
+
 #### Getters
 
 ```python
@@ -514,6 +544,13 @@ receipt = client.eth.get_receipt(tx_hash)
 # a normal price of $7200 per BTC would return a result of 72.
 btc_price = client.eth.perp.get_oracle_price(
   market=consts.PAIR_PBTC_USDC
+)
+
+# get the USD value of PLINK
+# Since PLINK and USDC both have 6 decimal places,
+# a normal price of $15 per LINK would return a result of 15.
+btc_price = client.eth.perp.get_oracle_price(
+  market=consts.PAIR_PLINK_USDC
 )
 
 # get the ETH value of USD
