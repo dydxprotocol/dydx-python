@@ -1,9 +1,9 @@
 requests==2.22.0
 requests-mock==1.6.0
-six==1.12
+six>=1.12,<2
 web3>=5.0.0,<6.0.0
 eth-account>=0.4.0,<0.6.0
 pytest>=4.4.0,<5.0.0
 tox==3.13.2
-setuptools==41.0.1
+setuptools>=41.0.1,<51.0.0
 eth_keys

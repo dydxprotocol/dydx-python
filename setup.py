@@ -2,21 +2,11 @@ from setuptools import setup, find_packages
 
 LONG_DESCRIPTION = open('README.md', 'r').read()
 
-REQUIREMENTS = [
-    'requests==2.22.0',
-    'requests-mock==1.6.0',
-    'six==1.12',
-    'web3==5.0.0',
-    'eth-account==0.4.0',
-    'pytest>=4.4.0,<5.0.0',
-    'tox==3.13.2',
-    'setuptools==41.0.1',
-    'eth_keys'
-]
+REQUIREMENTS = open('requirements.txt', 'r').read().split('\n')
 
 setup(
     name='dydx-python',
-    version='0.11.2',
+    version='0.11.3',
     packages=find_packages(),
     package_data={
         'dydx': ['abi/*.json'],
