@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.8.5
       - image: trufflesuite/ganache-cli:v6.6.0
         command: -d -k=petersburg -i 1001
     working_directory: ~/build
@@ -19,7 +19,7 @@ jobs:
           command: tox
   lint:
     docker:
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.8.5
     working_directory: ~/build
     steps:
       - checkout
@@ -31,7 +31,7 @@ jobs:
           command: flake8
   publish:
     docker:
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.8.5
     working_directory: ~/build
     steps:
       - checkout
