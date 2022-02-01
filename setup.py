@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 LONG_DESCRIPTION = open('README.md', 'r').read()
 
-REQUIREMENTS = open('requirements.txt', 'r').read().split('\n')
+REQUIREMENTS = open('requirements-publish.txt', 'r').read().split('\n')
 
 setup(
     name='dydx-python',
